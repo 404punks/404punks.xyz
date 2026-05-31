@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 Punks Labs - Whitelist Portal</title>
-  <!-- Tailwind + Lucide + Google Fonts -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=VT323&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
@@ -12,24 +11,6 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Mock elementSdk / dataSdk placeholders (non-intrusive) -->
-  <script>
-    window.elementSdk = {
-      init: (obj) => { if (obj.onConfigChange) obj.onConfigChange({}); },
-      setConfig: (cfg) => console.log("Config set", cfg)
-    };
-    window.dataSdk = {
-      init: async (handler) => { 
-        if (handler.onDataChanged) handler.onDataChanged([]); 
-        return { isOk: true };
-      },
-      create: async (entry) => {
-        console.log("Mock create:", entry);
-        return { isOk: true };
-      }
-    };
-  </script>
   
   <style>
     * { font-family: 'VT323', monospace; }
@@ -101,9 +82,6 @@
       );
       pointer-events: none;
     }
-    .pixel-skull {
-      image-rendering: pixelated;
-    }
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
@@ -145,8 +123,7 @@
       <div class="p-6 flex flex-col items-center gap-4">
         <div class="text-4xl pixel-skull">
           <img src="https://raw.githubusercontent.com/robosym/roborym.github.io/main/gif/1.gif" 
-               alt="loading skull" style="width: 80px; height: 80px; image-rendering: crisp-edges;" 
-               onerror="this.onerror=null; this.parentElement.innerHTML='💀';">
+               alt="loading skull" style="width: 80px; height: 80px; image-rendering: crisp-edges;">
         </div>
         <p class="press-start text-xs text-center" style="color: #000080;">404 PUNKS LABS</p>
         <p class="text-lg">Initializing Whitelist Portal...</p>
@@ -186,7 +163,7 @@
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">GDT Mint</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: green;">FREE</p><p class="text-sm">0 ETH</p></div></div>
       </div>
 
-      <!-- Live Counter -->
+      <!-- Live Counter - REAL TIME from Firebase -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 11px;">📡 LIVE - Whitelist Claims</span><div class="live-dot"></div></div>
         <div class="p-4 flex items-center justify-center gap-4 flex-wrap">
@@ -195,20 +172,19 @@
         </div>
       </div>
 
-      <!-- Mint Date with US Timezone -->
+      <!-- Mint Date -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 11px;">📅 Mint Date</span></div>
         <div class="p-3 text-center">
-          <p class="text-2xl" style="color: #800000;" id="el-mint-date">June 8, 2026 (ET)</p>
+          <p class="text-2xl" style="color: #800000;">June 8, 2026 (ET)</p>
           <p class="text-sm">Blockchain: Ethereum (ETH)</p>
         </div>
       </div>
 
-      <!-- Tasks with CORRECT Twitter Links (same as original) -->
+      <!-- Tasks -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 13px;">📋 Whitelist Tasks - Complete All to Claim</span></div>
         <div class="p-4 space-y-3">
-          <!-- Follow Task -->
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-follow">
             <div class="task-check" id="check-follow"></div>
             <span class="text-lg flex-1">Follow @404punklab on Twitter</span>
@@ -216,7 +192,6 @@
               <button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Verify ↗</button>
             </a>
           </div>
-          <!-- Like Task -->
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-like">
             <div class="task-check" id="check-like"></div>
             <span class="text-lg flex-1">Like Tweet</span>
@@ -224,7 +199,6 @@
               <button class="win95-btn text-sm" onclick="verifyTask('like', this)">Verify ↗</button>
             </a>
           </div>
-          <!-- Retweet Task -->
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-retweet">
             <div class="task-check" id="check-retweet"></div>
             <span class="text-lg flex-1">Retweet Tweet</span>
@@ -235,7 +209,7 @@
         </div>
       </div>
 
-      <!-- Submit Wallet - FIREBASE POWERED -->
+      <!-- Submit Wallet -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet Address</span></div>
         <div class="p-4">
@@ -249,7 +223,7 @@
         </div>
       </div>
 
-      <!-- Footer with US Time -->
+      <!-- Footer -->
       <div class="win95-border p-2 flex items-center justify-between fade-in flex-wrap gap-2">
         <div class="flex items-center gap-2">
           <button class="win95-btn text-sm">🖥️ Start</button> 
@@ -264,159 +238,72 @@
   </div>
 
   <script>
-    // ----------------------------- FIREBASE CONFIGURATION (REPLACE WITH YOUR OWN) -----------------------------
-    // 🔥 IMPORTANT: You must replace this firebaseConfig object with your actual Firebase project credentials.
-    // Create a Firestore database, enable it, and use "whitelistSubmissions" collection.
-    // For testing, you can use the config below but it's recommended to create your own Firebase project.
+    // ============================================================
+    // FIREBASE CONFIGURATION - YOUR REAL DATA
+    // ============================================================
     const firebaseConfig = {
-      apiKey: "AIzaSyDummyExampleKeyDoNotUseInProduction123456",   // <-- REPLACE WITH YOUR ACTUAL API KEY
-      authDomain: "your-project-id.firebaseapp.com",               // <-- REPLACE
-      projectId: "your-project-id",                                 // <-- REPLACE
-      storageBucket: "your-project-id.appspot.com",                 // <-- REPLACE
-      messagingSenderId: "123456789012",                            // <-- REPLACE
-      appId: "1:123456789012:web:abcdef1234567890"                  // <-- REPLACE
+      apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
+      authDomain: "punkswl.firebaseapp.com",
+      databaseURL: "https://punkswl-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "punkswl",
+      storageBucket: "punkswl.firebasestorage.app",
+      messagingSenderId: "810500731524",
+      appId: "1:810500731524:web:c6c52dd5191a19a67348d1",
+      measurementId: "G-7SXN0TR713"
     };
     
-    // NOTE: For demo purposes, if the config is not replaced, we fallback to localStorage simulation + console warning.
     let db = null;
     let firebaseAvailable = false;
-    let firestore = null;
-    
-    // Initialize Firebase if config appears valid (projectId not placeholder)
-    if (firebaseConfig.projectId && firebaseConfig.projectId !== "your-project-id") {
-      try {
-        const app = firebase.initializeApp(firebaseConfig);
-        firestore = firebase.firestore(app);
-        db = firestore;
-        firebaseAvailable = true;
-        console.log("Firebase initialized successfully.");
-      } catch (err) {
-        console.warn("Firebase init error:", err);
-        firebaseAvailable = false;
-      }
-    } else {
-      console.warn("Firebase config not set. Using localStorage fallback for whitelist storage. Please configure Firebase.");
-    }
-    
-    // ----------------------------- GLOBAL STATE -----------------------------
+    let liveListenerUnsubscribe = null;
     let tasks = { follow: false, like: false, retweet: false };
     let verificationErrors = { follow: 0, like: 0, retweet: 0 };
-    let currentUserSubmitted = false;       // per session, wallet already submitted flag
-    let whitelistedWallets = [];             // local mirror of Firestore data (count + addresses)
+    let currentUserSubmitted = false;
+    let whitelistedWallets = [];
     const MAX_SLOTS = 9900;
     
-    // DOM elements
     const liveCounterSpan = document.getElementById('live-counter');
     const submitBtn = document.getElementById('submit-btn');
     const submitStatus = document.getElementById('submit-status');
     const walletInput = document.getElementById('wallet-input');
     
-    // Helper: update live counter UI
+    // Initialize Firebase
+    try {
+      const app = firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore(app);
+      firebaseAvailable = true;
+      console.log("Firebase initialized successfully!");
+    } catch (err) {
+      console.warn("Firebase init error:", err);
+      firebaseAvailable = false;
+    }
+    
     function updateLiveCounterUI() {
       if (liveCounterSpan) liveCounterSpan.innerText = whitelistedWallets.length;
-      // Also optionally check if max slots reached
       if (whitelistedWallets.length >= MAX_SLOTS) {
-        submitStatus.textContent = '❌ All whitelist slots filled!';
+        submitStatus.textContent = 'All whitelist slots filled!';
         submitStatus.style.color = 'red';
         if (submitBtn) submitBtn.disabled = true;
       }
     }
     
-    // Load whitelist data from Firestore (or localStorage fallback)
-    async function loadWhitelistFromFirebase() {
-      if (firebaseAvailable && db) {
-        try {
-          const snapshot = await db.collection('whitelistSubmissions').get();
-          const docs = [];
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            docs.push({ wallet_address: data.wallet_address, claimed_at: data.claimed_at, id: doc.id });
-          });
-          whitelistedWallets = docs;
-          updateLiveCounterUI();
-          return;
-        } catch (err) {
-          console.error("Error loading from Firestore:", err);
-          // fallback to local
-          loadFromLocalStorage();
-        }
-      } else {
-        loadFromLocalStorage();
-      }
-    }
-    
-    function loadFromLocalStorage() {
-      const stored = localStorage.getItem('404Punks_Whitelist');
-      if (stored) {
-        try {
-          whitelistedWallets = JSON.parse(stored);
-        } catch(e) { whitelistedWallets = []; }
-      } else {
-        // seed mock data for demo so it's not empty
-        whitelistedWallets = [];
-      }
-      // Ensure no duplicates and limit size
-      if (whitelistedWallets.length > MAX_SLOTS) whitelistedWallets = whitelistedWallets.slice(0, MAX_SLOTS);
-      updateLiveCounterUI();
-    }
-    
-    function persistToLocalStorage() {
-      localStorage.setItem('404Punks_Whitelist', JSON.stringify(whitelistedWallets));
-    }
-    
-    // Add submission to Firebase (and local mirror)
-    async function addWhitelistEntryToFirebase(walletAddress) {
-      const newEntry = {
-        wallet_address: walletAddress.toLowerCase(),
-        claimed_at: new Date().toISOString(),
-        timestamp: firebase.firestore?.FieldValue?.serverTimestamp?.() || new Date().toISOString()
-      };
+    // REAL-TIME LISTENER - Live update for everyone
+    function setupRealTimeListener() {
+      if (!firebaseAvailable || !db) return;
+      if (liveListenerUnsubscribe) liveListenerUnsubscribe();
       
-      if (firebaseAvailable && db) {
-        try {
-          // Check if wallet already exists in Firestore (double-check)
-          const existingQuery = await db.collection('whitelistSubmissions')
-            .where('wallet_address', '==', walletAddress.toLowerCase())
-            .get();
-          if (!existingQuery.empty) {
-            return { success: false, error: "Wallet already whitelisted" };
-          }
-          // Check total count
-          const countSnap = await db.collection('whitelistSubmissions').count().get();
-          const currentCount = countSnap.data().count;
-          if (currentCount >= MAX_SLOTS) {
-            return { success: false, error: "Max slots reached" };
-          }
-          await db.collection('whitelistSubmissions').add(newEntry);
-          // Update local mirror
-          whitelistedWallets.push({ wallet_address: walletAddress.toLowerCase(), claimed_at: newEntry.claimed_at });
+      liveListenerUnsubscribe = db.collection('whitelistSubmissions')
+        .onSnapshot((snapshot) => {
+          whitelistedWallets = [];
+          snapshot.forEach(doc => {
+            whitelistedWallets.push({ wallet_address: doc.data().wallet_address });
+          });
           updateLiveCounterUI();
-          persistToLocalStorage(); // backup
-          return { success: true };
-        } catch (err) {
-          console.error("Firestore write error:", err);
-          // fallback to local save
-          return addToLocalOnly(walletAddress);
-        }
-      } else {
-        return addToLocalOnly(walletAddress);
-      }
+          console.log("Live update:", whitelistedWallets.length, "wallets whitelisted");
+        }, (error) => {
+          console.error("Listener error:", error);
+        });
     }
     
-    function addToLocalOnly(walletAddress) {
-      if (whitelistedWallets.some(w => w.wallet_address === walletAddress.toLowerCase())) {
-        return { success: false, error: "Wallet already whitelisted" };
-      }
-      if (whitelistedWallets.length >= MAX_SLOTS) {
-        return { success: false, error: "Max slots reached" };
-      }
-      whitelistedWallets.push({ wallet_address: walletAddress.toLowerCase(), claimed_at: new Date().toISOString() });
-      updateLiveCounterUI();
-      persistToLocalStorage();
-      return { success: true };
-    }
-    
-    // Check if a wallet already submitted (Firestore + local)
     async function isWalletAlreadyWhitelisted(address) {
       const lower = address.toLowerCase();
       if (firebaseAvailable && db) {
@@ -429,27 +316,44 @@
         } catch(e) {
           return whitelistedWallets.some(w => w.wallet_address === lower);
         }
-      } else {
-        return whitelistedWallets.some(w => w.wallet_address === lower);
+      }
+      return whitelistedWallets.some(w => w.wallet_address === lower);
+    }
+    
+    async function addWhitelistEntryToFirebase(walletAddress) {
+      const lowerAddress = walletAddress.toLowerCase();
+      
+      if (!firebaseAvailable || !db) {
+        return { success: false, error: "Firebase not configured" };
+      }
+      
+      try {
+        const existingQuery = await db.collection('whitelistSubmissions')
+          .where('wallet_address', '==', lowerAddress)
+          .get();
+        
+        if (!existingQuery.empty) {
+          return { success: false, error: "Wallet already whitelisted" };
+        }
+        
+        const countSnapshot = await db.collection('whitelistSubmissions').count().get();
+        if (countSnapshot.data().count >= MAX_SLOTS) {
+          return { success: false, error: "All slots filled" };
+        }
+        
+        await db.collection('whitelistSubmissions').add({
+          wallet_address: lowerAddress,
+          claimed_at: new Date().toISOString(),
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        return { success: true };
+      } catch (err) {
+        console.error("Firestore error:", err);
+        return { success: false, error: "Network error, try again" };
       }
     }
     
-    // Refresh counts from Firestore in background
-    async function refreshLiveCount() {
-      if (firebaseAvailable && db) {
-        try {
-          const snapshot = await db.collection('whitelistSubmissions').get();
-          whitelistedWallets = [];
-          snapshot.forEach(doc => {
-            whitelistedWallets.push({ wallet_address: doc.data().wallet_address, claimed_at: doc.data().claimed_at });
-          });
-          updateLiveCounterUI();
-          persistToLocalStorage();
-        } catch(e) { console.warn(e); }
-      }
-    }
-    
-    // Task verification logic (unchanged style, but works)
     function completeTaskUI(task) {
       if (tasks[task]) return;
       tasks[task] = true;
@@ -466,7 +370,7 @@
       if (allDone && !currentUserSubmitted) {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
-        submitStatus.textContent = '✓ All tasks completed! Enter your wallet.';
+        submitStatus.textContent = 'All tasks completed! Enter your wallet.';
         submitStatus.style.color = 'green';
       } else if (currentUserSubmitted) {
         submitBtn.disabled = true;
@@ -474,8 +378,7 @@
       } else {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.5';
-        if (!(tasks.follow && tasks.like && tasks.retweet))
-          submitStatus.textContent = '⚠️ Complete all 3 tasks to claim WL.';
+        submitStatus.textContent = 'Complete all 3 tasks to claim WL';
       }
     }
     
@@ -485,12 +388,13 @@
       const originalText = btnElement.textContent;
       btnElement.textContent = 'Verifying...';
       await new Promise(resolve => setTimeout(resolve, 5000));
-      const errorThreshold = 2;
+      
       const currentErrorCount = verificationErrors[task] || 0;
-      let shouldError = currentErrorCount < errorThreshold && Math.random() > 0.55;
+      let shouldError = currentErrorCount < 2 && Math.random() > 0.55;
+      
       if (shouldError) {
         verificationErrors[task] = currentErrorCount + 1;
-        btnElement.textContent = '⚠ Error - Try Again';
+        btnElement.textContent = 'Error - Try Again';
         btnElement.style.background = '#800000';
         btnElement.style.color = '#fff';
         btnElement.disabled = false;
@@ -504,48 +408,45 @@
         }, 2500);
       } else {
         completeTaskUI(task);
-        btnElement.textContent = '✓ Verified';
+        btnElement.textContent = 'Verified';
         btnElement.style.background = '#008000';
         btnElement.style.color = '#fff';
         btnElement.disabled = true;
       }
     };
     
-    // NEW Firebase submission handler
     window.submitWalletToFirebase = async function() {
       if (currentUserSubmitted) {
-        submitStatus.textContent = '✅ Already claimed! See you on mint day.';
+        submitStatus.textContent = 'Already claimed! See you on mint day.';
         return;
       }
+      
       const addr = walletInput.value.trim();
       if (!addr || !addr.startsWith('0x') || addr.length < 10) {
-        submitStatus.textContent = '⚠ Invalid ETH address! (must start with 0x)';
+        submitStatus.textContent = 'Invalid ETH address! (must start with 0x)';
         submitStatus.style.color = 'red';
         return;
       }
       
-      // double-check tasks still completed
       if (!(tasks.follow && tasks.like && tasks.retweet)) {
-        submitStatus.textContent = '⚠ Please complete all tasks first.';
+        submitStatus.textContent = 'Please complete all tasks first.';
         submitStatus.style.color = '#800000';
         return;
       }
       
-      // Check against Firestore for existing wallet
       const alreadyExists = await isWalletAlreadyWhitelisted(addr);
       if (alreadyExists) {
-        submitStatus.textContent = '⚠ Wallet already whitelisted!';
+        submitStatus.textContent = 'Wallet already whitelisted!';
         submitStatus.style.color = '#800000';
         return;
       }
       
       if (whitelistedWallets.length >= MAX_SLOTS) {
-        submitStatus.textContent = '⚠ All whitelist slots filled!';
+        submitStatus.textContent = 'All whitelist slots filled!';
         submitStatus.style.color = 'red';
         return;
       }
       
-      // Disable button during submission
       submitBtn.disabled = true;
       const originalBtnText = submitBtn.textContent;
       submitBtn.textContent = 'Submitting...';
@@ -554,57 +455,47 @@
       
       if (result.success) {
         currentUserSubmitted = true;
-        submitBtn.textContent = '✓ Claimed!';
+        submitBtn.textContent = 'Claimed!';
         submitBtn.style.background = '#000080';
         submitBtn.style.color = '#fff';
-        submitStatus.textContent = '🎉 Whitelist spot secured! See you on mint day.';
+        submitStatus.textContent = 'Whitelist spot secured! See you on mint day.';
         submitStatus.style.color = '#000080';
-        // Refresh from firebase to get accurate count
-        await refreshLiveCount();
-        // Extra: ensure input is read-only style but not forced, fine
       } else {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
-        submitStatus.textContent = result.error || '❌ Submission failed. Try again.';
+        submitStatus.textContent = result.error || 'Submission failed. Try again.';
         submitStatus.style.color = 'red';
-        // Reset button style
         submitBtn.style.background = '';
         submitBtn.style.color = '';
       }
     };
     
-    // Check wallet existence on input change (Firestore + local)
     async function checkWalletAlreadyExistsDynamic() {
       const addr = walletInput.value.trim();
       if (!addr || addr.length < 5) {
         if (tasks.follow && tasks.like && tasks.retweet && !currentUserSubmitted) {
           submitBtn.disabled = false;
-          submitStatus.textContent = '✓ Ready to claim!';
+          submitStatus.textContent = 'Ready to claim!';
           submitStatus.style.color = 'green';
-        } else if (!(tasks.follow && tasks.like && tasks.retweet)) {
-          submitBtn.disabled = true;
         }
         return;
       }
       const exists = await isWalletAlreadyWhitelisted(addr);
       if (exists) {
-        submitStatus.textContent = '🔒 Wallet already whitelisted.';
+        submitStatus.textContent = 'Wallet already whitelisted.';
         submitStatus.style.color = '#800000';
         submitBtn.disabled = true;
         currentUserSubmitted = true;
       } else if (tasks.follow && tasks.like && tasks.retweet && !currentUserSubmitted) {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
-        submitStatus.textContent = '✓ Ready to claim!';
+        submitStatus.textContent = 'Ready to claim!';
         submitStatus.style.color = 'green';
-      } else if (!(tasks.follow && tasks.like && tasks.retweet)) {
-        submitBtn.disabled = true;
       }
     }
     
     walletInput.addEventListener('input', checkWalletAlreadyExistsDynamic);
     
-    // US Eastern Time clock
     function updateUSTime() {
       const now = new Date();
       const formatter = new Intl.DateTimeFormat('en-US', {
@@ -619,7 +510,6 @@
     }
     setInterval(updateUSTime, 1000);
     
-    // Loading simulation
     function startLoading() {
       let progress = 0;
       const loadingTexts = [
@@ -641,17 +531,12 @@
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('main-portal').classList.remove('hidden');
             updateUSTime();
-            // initial refresh after loading
-            refreshLiveCount().then(() => {
-              // check tasks empty
-              checkAllTasks();
-            });
+            checkAllTasks();
           }, 500);
         }
       }, 280);
     }
     
-    // Reset tasks UI on fresh start
     function resetTasksUI() {
       ['follow', 'like', 'retweet'].forEach(t => {
         const chk = document.getElementById('check-' + t);
@@ -671,7 +556,9 @@
     
     document.addEventListener('DOMContentLoaded', async () => {
       resetTasksUI();
-      await loadWhitelistFromFirebase(); // load existing whitelist count
+      if (firebaseAvailable) {
+        setupRealTimeListener();
+      }
       startLoading();
     });
   </script>
