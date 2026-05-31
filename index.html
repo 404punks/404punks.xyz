@@ -10,7 +10,7 @@
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   
   <style>
     * { font-family: 'VT323', monospace; }
@@ -139,7 +139,6 @@
   <div id="main-portal" class="h-full overflow-auto hidden" style="background: #008080;">
     <div class="p-4 max-w-4xl mx-auto w-full">
       
-      <!-- Header -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar">
           <span style="font-size: 13px;">🖥️ 404 Punks Labs - Whitelist Portal</span>
@@ -155,7 +154,6 @@
         </div>
       </div>
 
-      <!-- Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">Supply</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: #000080;">10,000</p><p class="text-sm">Total NFTs</p></div></div>
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">WL Slots</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: #000080;">9,900</p><p class="text-sm">Available</p></div></div>
@@ -163,7 +161,7 @@
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">GDT Mint</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: green;">FREE</p><p class="text-sm">0 ETH</p></div></div>
       </div>
 
-      <!-- Live Counter - REAL TIME from Firebase -->
+      <!-- LIVE Counter - REAL TIME from Realtime Database -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 11px;">📡 LIVE - Whitelist Claims</span><div class="live-dot"></div></div>
         <div class="p-4 flex items-center justify-center gap-4 flex-wrap">
@@ -172,7 +170,6 @@
         </div>
       </div>
 
-      <!-- Mint Date -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 11px;">📅 Mint Date</span></div>
         <div class="p-3 text-center">
@@ -181,35 +178,27 @@
         </div>
       </div>
 
-      <!-- Tasks -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 13px;">📋 Whitelist Tasks - Complete All to Claim</span></div>
         <div class="p-4 space-y-3">
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-follow">
             <div class="task-check" id="check-follow"></div>
             <span class="text-lg flex-1">Follow @404punklab on Twitter</span>
-            <a href="https://x.com/404punklab" target="_blank" rel="noopener noreferrer">
-              <button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Verify ↗</button>
-            </a>
+            <a href="https://x.com/404punklab" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Verify ↗</button></a>
           </div>
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-like">
             <div class="task-check" id="check-like"></div>
             <span class="text-lg flex-1">Like Tweet</span>
-            <a href="https://x.com/i/status/2061012911653269837" target="_blank" rel="noopener noreferrer">
-              <button class="win95-btn text-sm" onclick="verifyTask('like', this)">Verify ↗</button>
-            </a>
+            <a href="https://x.com/i/status/2061012911653269837" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('like', this)">Verify ↗</button></a>
           </div>
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-retweet">
             <div class="task-check" id="check-retweet"></div>
             <span class="text-lg flex-1">Retweet Tweet</span>
-            <a href="https://x.com/i/status/2061012911653269837" target="_blank" rel="noopener noreferrer">
-              <button class="win95-btn text-sm" onclick="verifyTask('retweet', this)">Verify ↗</button>
-            </a>
+            <a href="https://x.com/i/status/2061012911653269837" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('retweet', this)">Verify ↗</button></a>
           </div>
         </div>
       </div>
 
-      <!-- Submit Wallet -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet Address</span></div>
         <div class="p-4">
@@ -218,29 +207,20 @@
           </div>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-sm" id="submit-status" style="color: #808080;">Complete all tasks to claim WL</p>
-            <button class="win95-btn text-lg" id="submit-btn" onclick="submitWalletToFirebase()" disabled style="opacity: 0.5;">Claim Whitelist</button>
+            <button class="win95-btn text-lg" id="submit-btn" onclick="submitWallet()" disabled style="opacity: 0.5;">Claim Whitelist</button>
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="win95-border p-2 flex items-center justify-between fade-in flex-wrap gap-2">
-        <div class="flex items-center gap-2">
-          <button class="win95-btn text-sm">🖥️ Start</button> 
-          <span class="text-sm text-gray-700">|</span> 
-          <span class="text-sm">404 Punks Labs © 2026</span>
-        </div>
-        <div class="win95-inset px-3 py-1 text-sm font-mono" id="clock-display">
-          00:00:00
-        </div>
+        <div class="flex items-center gap-2"><button class="win95-btn text-sm">🖥️ Start</button> <span class="text-sm text-gray-700">|</span> <span class="text-sm">404 Punks Labs © 2026</span></div>
+        <div class="win95-inset px-3 py-1 text-sm font-mono" id="clock-display">00:00:00</div>
       </div>
     </div>
   </div>
 
   <script>
-    // ============================================================
-    // FIREBASE CONFIGURATION - YOUR REAL DATA
-    // ============================================================
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
       authDomain: "punkswl.firebaseapp.com",
@@ -252,13 +232,11 @@
       measurementId: "G-7SXN0TR713"
     };
     
-    let db = null;
-    let firebaseAvailable = false;
-    let liveListenerUnsubscribe = null;
+    let database = null;
+    let dbAvailable = false;
     let tasks = { follow: false, like: false, retweet: false };
-    let verificationErrors = { follow: 0, like: 0, retweet: 0 };
     let currentUserSubmitted = false;
-    let whitelistedWallets = [];
+    let whitelistCount = 0;
     const MAX_SLOTS = 9900;
     
     const liveCounterSpan = document.getElementById('live-counter');
@@ -266,90 +244,86 @@
     const submitStatus = document.getElementById('submit-status');
     const walletInput = document.getElementById('wallet-input');
     
-    // Initialize Firebase
+    // Initialize Firebase with Realtime Database
     try {
       const app = firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore(app);
-      firebaseAvailable = true;
-      console.log("Firebase initialized successfully!");
+      database = firebase.database(app);
+      dbAvailable = true;
+      console.log("Realtime Database initialized!");
     } catch (err) {
-      console.warn("Firebase init error:", err);
-      firebaseAvailable = false;
+      console.error("Firebase init error:", err);
+      dbAvailable = false;
     }
     
-    function updateLiveCounterUI() {
-      if (liveCounterSpan) liveCounterSpan.innerText = whitelistedWallets.length;
-      if (whitelistedWallets.length >= MAX_SLOTS) {
-        submitStatus.textContent = 'All whitelist slots filled!';
-        submitStatus.style.color = 'red';
-        if (submitBtn) submitBtn.disabled = true;
-      }
-    }
-    
-    // REAL-TIME LISTENER - Live update for everyone
-    function setupRealTimeListener() {
-      if (!firebaseAvailable || !db) return;
-      if (liveListenerUnsubscribe) liveListenerUnsubscribe();
+    // LIVE REAL-TIME LISTENER - This updates for everyone instantly
+    function setupLiveListener() {
+      if (!dbAvailable || !database) return;
       
-      liveListenerUnsubscribe = db.collection('whitelistSubmissions')
-        .onSnapshot((snapshot) => {
-          whitelistedWallets = [];
-          snapshot.forEach(doc => {
-            whitelistedWallets.push({ wallet_address: doc.data().wallet_address });
-          });
-          updateLiveCounterUI();
-          console.log("Live update:", whitelistedWallets.length, "wallets whitelisted");
-        }, (error) => {
-          console.error("Listener error:", error);
-        });
+      const whitelistRef = database.ref('whitelist');
+      whitelistRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const wallets = Object.keys(data);
+          whitelistCount = wallets.length;
+        } else {
+          whitelistCount = 0;
+        }
+        liveCounterSpan.innerText = whitelistCount;
+        console.log("Live update: " + whitelistCount + " wallets whitelisted");
+        
+        if (whitelistCount >= MAX_SLOTS) {
+          submitStatus.textContent = 'All whitelist slots filled!';
+          submitStatus.style.color = 'red';
+          if (submitBtn) submitBtn.disabled = true;
+        }
+      });
     }
     
     async function isWalletAlreadyWhitelisted(address) {
       const lower = address.toLowerCase();
-      if (firebaseAvailable && db) {
-        try {
-          const q = await db.collection('whitelistSubmissions')
-            .where('wallet_address', '==', lower)
-            .limit(1)
-            .get();
-          return !q.empty;
-        } catch(e) {
-          return whitelistedWallets.some(w => w.wallet_address === lower);
+      if (!dbAvailable || !database) return false;
+      
+      const snapshot = await database.ref('whitelist').once('value');
+      const data = snapshot.val();
+      if (!data) return false;
+      
+      for (let key in data) {
+        if (data[key].wallet_address === lower) {
+          return true;
         }
       }
-      return whitelistedWallets.some(w => w.wallet_address === lower);
+      return false;
     }
     
-    async function addWhitelistEntryToFirebase(walletAddress) {
+    async function addWhitelistEntry(walletAddress) {
       const lowerAddress = walletAddress.toLowerCase();
       
-      if (!firebaseAvailable || !db) {
-        return { success: false, error: "Firebase not configured" };
+      if (!dbAvailable || !database) {
+        return { success: false, error: "Database not connected" };
       }
       
       try {
-        const existingQuery = await db.collection('whitelistSubmissions')
-          .where('wallet_address', '==', lowerAddress)
-          .get();
-        
-        if (!existingQuery.empty) {
+        const exists = await isWalletAlreadyWhitelisted(lowerAddress);
+        if (exists) {
           return { success: false, error: "Wallet already whitelisted" };
         }
         
-        const countSnapshot = await db.collection('whitelistSubmissions').count().get();
-        if (countSnapshot.data().count >= MAX_SLOTS) {
+        if (whitelistCount >= MAX_SLOTS) {
           return { success: false, error: "All slots filled" };
         }
         
-        await db.collection('whitelistSubmissions').add({
+        const newEntry = {
           wallet_address: lowerAddress,
           claimed_at: new Date().toISOString(),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+          timestamp: Date.now()
+        };
+        
+        const newRef = database.ref('whitelist').push();
+        await newRef.set(newEntry);
         
         return { success: true };
       } catch (err) {
-        console.error("Firestore error:", err);
+        console.error("Database error:", err);
         return { success: false, error: "Network error, try again" };
       }
     }
@@ -387,13 +361,16 @@
       btnElement.disabled = true;
       const originalText = btnElement.textContent;
       btnElement.textContent = 'Verifying...';
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      const currentErrorCount = verificationErrors[task] || 0;
-      let shouldError = currentErrorCount < 2 && Math.random() > 0.55;
-      
-      if (shouldError) {
-        verificationErrors[task] = currentErrorCount + 1;
+      // 80% success rate for better UX
+      if (Math.random() > 0.2) {
+        completeTaskUI(task);
+        btnElement.textContent = 'Verified';
+        btnElement.style.background = '#008000';
+        btnElement.style.color = '#fff';
+        btnElement.disabled = true;
+      } else {
         btnElement.textContent = 'Error - Try Again';
         btnElement.style.background = '#800000';
         btnElement.style.color = '#fff';
@@ -405,17 +382,11 @@
             btnElement.style.color = '';
             btnElement.disabled = false;
           }
-        }, 2500);
-      } else {
-        completeTaskUI(task);
-        btnElement.textContent = 'Verified';
-        btnElement.style.background = '#008000';
-        btnElement.style.color = '#fff';
-        btnElement.disabled = true;
+        }, 2000);
       }
     };
     
-    window.submitWalletToFirebase = async function() {
+    window.submitWallet = async function() {
       if (currentUserSubmitted) {
         submitStatus.textContent = 'Already claimed! See you on mint day.';
         return;
@@ -434,24 +405,16 @@
         return;
       }
       
-      const alreadyExists = await isWalletAlreadyWhitelisted(addr);
-      if (alreadyExists) {
-        submitStatus.textContent = 'Wallet already whitelisted!';
-        submitStatus.style.color = '#800000';
-        return;
-      }
-      
-      if (whitelistedWallets.length >= MAX_SLOTS) {
-        submitStatus.textContent = 'All whitelist slots filled!';
+      if (!dbAvailable) {
+        submitStatus.textContent = 'Database not connected. Refresh page.';
         submitStatus.style.color = 'red';
         return;
       }
       
       submitBtn.disabled = true;
-      const originalBtnText = submitBtn.textContent;
       submitBtn.textContent = 'Submitting...';
       
-      const result = await addWhitelistEntryToFirebase(addr);
+      const result = await addWhitelistEntry(addr);
       
       if (result.success) {
         currentUserSubmitted = true;
@@ -462,7 +425,7 @@
         submitStatus.style.color = '#000080';
       } else {
         submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
+        submitBtn.textContent = 'Claim Whitelist';
         submitStatus.textContent = result.error || 'Submission failed. Try again.';
         submitStatus.style.color = 'red';
         submitBtn.style.background = '';
@@ -470,16 +433,10 @@
       }
     };
     
-    async function checkWalletAlreadyExistsDynamic() {
+    async function checkWalletExists() {
       const addr = walletInput.value.trim();
-      if (!addr || addr.length < 5) {
-        if (tasks.follow && tasks.like && tasks.retweet && !currentUserSubmitted) {
-          submitBtn.disabled = false;
-          submitStatus.textContent = 'Ready to claim!';
-          submitStatus.style.color = 'green';
-        }
-        return;
-      }
+      if (!addr || addr.length < 5) return;
+      
       const exists = await isWalletAlreadyWhitelisted(addr);
       if (exists) {
         submitStatus.textContent = 'Wallet already whitelisted.';
@@ -494,7 +451,7 @@
       }
     }
     
-    walletInput.addEventListener('input', checkWalletAlreadyExistsDynamic);
+    walletInput.addEventListener('input', checkWalletExists);
     
     function updateUSTime() {
       const now = new Date();
@@ -512,14 +469,7 @@
     
     function startLoading() {
       let progress = 0;
-      const loadingTexts = [
-        'Loading system files...',
-        'Connecting to Ethereum...',
-        'Initializing NFT database...',
-        'Loading punk assets...',
-        'Verifying blockchain...',
-        'Portal ready!'
-      ];
+      const loadingTexts = ['Loading system files...', 'Connecting to Ethereum...', 'Initializing NFT database...', 'Loading punk assets...', 'Verifying blockchain...', 'Portal ready!'];
       const interval = setInterval(() => {
         progress = Math.min(progress + (Math.random() * 9 + 4), 100);
         document.getElementById('loading-bar').style.width = progress + '%';
@@ -532,6 +482,9 @@
             document.getElementById('main-portal').classList.remove('hidden');
             updateUSTime();
             checkAllTasks();
+            if (dbAvailable) {
+              setupLiveListener();
+            }
           }, 500);
         }
       }, 280);
@@ -556,9 +509,6 @@
     
     document.addEventListener('DOMContentLoaded', async () => {
       resetTasksUI();
-      if (firebaseAvailable) {
-        setupRealTimeListener();
-      }
       startLoading();
     });
   </script>
