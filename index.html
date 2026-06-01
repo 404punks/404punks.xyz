@@ -164,6 +164,11 @@
       margin-top: 8px;
       text-align: right;
     }
+    .disabled-btn {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body class="h-full overflow-auto" style="background: #008080;">
@@ -254,7 +259,7 @@
         </div>
       </div>
 
-      <!-- FORM: Wallet + Twitter Username + Referral -->
+      <!-- FORM: Wallet + Twitter Username + Referral - SUBMIT BUTTON DISABLED (can't submit) but data still shown live -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet & Social Info</span></div>
         <div class="p-4">
@@ -268,8 +273,8 @@
             <input type="text" id="referral-friend" placeholder="Referral: @friendTwitterHandle (optional)" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
           </div>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-sm" id="submit-status" style="color: #808080;">Complete all tasks & fill wallet + Twitter handle</p>
-            <button class="win95-btn text-lg" id="submit-btn" onclick="submitWallet()" disabled style="opacity: 0.5;">Claim Whitelist</button>
+            <p class="text-sm" id="submit-status" style="color: #808080;">⚠️ Form submission is currently disabled (demo mode) — live data below from Firebase</p>
+            <button class="win95-btn text-lg" id="submit-btn" onclick="return false;" disabled style="opacity:0.5; cursor:not-allowed;">Claim Whitelist (Disabled)</button>
           </div>
         </div>
       </div>
@@ -309,7 +314,7 @@
             <tbody id="modal-whitelist-tbody">
               <tr><td colspan="3" class="text-center">Loading...</td></tr>
             </tbody>
-          </table>
+           </table>
         </div>
         <div class="close-modal-btn">
           <button class="win95-btn" onclick="closeAddressModal()">Close</button>
@@ -352,7 +357,6 @@
     let database = null;
     let dbAvailable = false;
     let tasks = { follow: false, like: false, retweet: false };
-    let currentUserSubmitted = false;
     let whitelistCount = 0;
     let whitelistData = []; // store for modals
     const MAX_SLOTS = 9900;
@@ -394,7 +398,7 @@
       return address.slice(0, 6) + '...' + address.slice(-4);
     }
     
-    // Live listener to update global whitelistData and counter
+    // Live listener to update global whitelistData and counter - shows existing submitted data live in card / modal
     function setupLiveListener() {
       if (!dbAvailable || !database) return;
       const whitelistRef = database.ref('whitelist');
@@ -422,66 +426,16 @@
         if (whitelistCount >= MAX_SLOTS) {
           submitStatus.textContent = 'All whitelist slots filled!';
           submitStatus.style.color = 'red';
-          if (submitBtn) submitBtn.disabled = true;
         }
-        // Refresh modals if open (optional)
+        // Refresh modals if open
         if (document.getElementById('addressModal').style.display === 'flex') renderAddressModal();
         if (document.getElementById('leaderboardModal').style.display === 'flex') renderLeaderboardModal();
       });
     }
     
-    async function isWalletAlreadyWhitelisted(address) {
-      const lower = address.toLowerCase();
-      if (!dbAvailable || !database) return false;
-      const snapshot = await database.ref('whitelist').once('value');
-      const data = snapshot.val();
-      if (!data) return false;
-      for (let key in data) {
-        if (data[key].wallet_address === lower) return true;
-      }
-      return false;
-    }
-    
-    async function isTwitterHandleUsed(twitterHandle) {
-      if (!twitterHandle || !dbAvailable || !database) return false;
-      const normalized = twitterHandle.trim().toLowerCase();
-      if (normalized === "") return false;
-      const snapshot = await database.ref('whitelist').once('value');
-      const data = snapshot.val();
-      if (!data) return false;
-      for (let key in data) {
-        if (data[key].twitter_handle && data[key].twitter_handle.toLowerCase() === normalized) return true;
-      }
-      return false;
-    }
-    
-    async function addWhitelistEntry(walletAddress, twitterHandle, referralFriend) {
-      const lowerAddress = walletAddress.toLowerCase();
-      const cleanTwitter = twitterHandle.trim() || "";
-      const cleanReferral = referralFriend.trim() || "";
-      if (!dbAvailable || !database) return { success: false, error: "Database not connected" };
-      try {
-        const exists = await isWalletAlreadyWhitelisted(lowerAddress);
-        if (exists) return { success: false, error: "Wallet already whitelisted" };
-        if (cleanTwitter !== "") {
-          const twitterTaken = await isTwitterHandleUsed(cleanTwitter);
-          if (twitterTaken) return { success: false, error: "This Twitter handle already used for whitelist." };
-        }
-        if (whitelistCount >= MAX_SLOTS) return { success: false, error: "All slots filled" };
-        const newEntry = {
-          wallet_address: lowerAddress,
-          twitter_handle: cleanTwitter,
-          referral_friend: cleanReferral,
-          claimed_at: new Date().toISOString(),
-          timestamp: Date.now()
-        };
-        await database.ref('whitelist').push().set(newEntry);
-        return { success: true };
-      } catch (err) {
-        console.error(err);
-        return { success: false, error: "Network error, try again" };
-      }
-    }
+    // All submit functions are DISABLED as requested: cannot submit new entries.
+    // But we keep reading live data that already exists in Firebase.
+    // The addWhitelistEntry is never called because submit button is disabled + onclick returns false.
     
     function completeTaskUI(task) {
       if (tasks[task]) return;
@@ -492,31 +446,23 @@
     }
     
     function checkAllTasks() {
+      // Just for visual feedback - submit always disabled per requirement
       const allDone = tasks.follow && tasks.like && tasks.retweet;
       const hasWallet = walletInput.value.trim().startsWith('0x') && walletInput.value.trim().length >= 10;
       const hasTwitter = twitterUsernameInput.value.trim().length > 0;
-      if (allDone && !currentUserSubmitted && hasWallet && hasTwitter) {
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        submitStatus.textContent = 'All tasks complete & info valid! Click Claim.';
-        submitStatus.style.color = 'green';
-      } else if (currentUserSubmitted) {
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
+      if (allDone && hasWallet && hasTwitter) {
+        submitStatus.textContent = '✅ All tasks complete! But form submission is disabled (demo mode). Live data shown from Firebase.';
+        submitStatus.style.color = '#2b6e2b';
       } else if (!allDone) {
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-        submitStatus.textContent = 'Complete all 3 tasks first.';
+        submitStatus.textContent = '⚠️ Complete all 3 tasks first. (Submission disabled anyway)';
       } else if (!hasWallet) {
-        submitBtn.disabled = true;
-        submitStatus.textContent = 'Enter valid Ethereum wallet (0x...).';
+        submitStatus.textContent = '⚠️ Enter valid Ethereum wallet (0x...).';
       } else if (!hasTwitter) {
-        submitBtn.disabled = true;
-        submitStatus.textContent = 'Enter your Twitter username (e.g., @404punkslab).';
-      } else {
-        submitBtn.disabled = true;
-        submitStatus.textContent = 'Complete all tasks & fill wallet + Twitter.';
+        submitStatus.textContent = '⚠️ Enter your Twitter username.';
       }
+      // Submit remains disabled
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
     }
     
     window.verifyTask = async function(task, btnElement) {
@@ -542,30 +488,23 @@
       }
     };
     
-    window.submitWallet = async function() {
-      if (currentUserSubmitted) { submitStatus.textContent = 'Already claimed!'; return; }
-      const addr = walletInput.value.trim();
-      const twitterUser = twitterUsernameInput.value.trim();
-      const referralFriend = referralFriendInput.value.trim();
-      if (!addr.startsWith('0x') || addr.length < 10) { submitStatus.textContent = 'Invalid ETH address!'; return; }
-      if (!twitterUser) { submitStatus.textContent = 'Enter Twitter username'; return; }
-      if (!(tasks.follow && tasks.like && tasks.retweet)) { submitStatus.textContent = 'Complete all tasks first.'; return; }
-      if (!dbAvailable) { submitStatus.textContent = 'Database not connected.'; return; }
-      submitBtn.disabled = true; submitBtn.textContent = 'Submitting...';
-      const result = await addWhitelistEntry(addr, twitterUser, referralFriend);
-      if (result.success) {
-        currentUserSubmitted = true;
-        submitBtn.textContent = 'Claimed!';
-        submitBtn.style.background = '#000080';
-        submitStatus.textContent = 'Whitelist spot secured! See you on mint day.';
-        walletInput.disabled = true; twitterUsernameInput.disabled = true; referralFriendInput.disabled = true;
-      } else {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Claim Whitelist';
-        submitStatus.textContent = result.error || 'Submission failed.';
-        submitStatus.style.color = 'red';
-      }
+    // Override submitWallet to prevent any submission
+    window.submitWallet = function() {
+      // Explicitly blocked: do nothing, show message
+      submitStatus.textContent = '❌ Form submission is disabled on this demo portal. Existing whitelist data shown live.';
+      submitStatus.style.color = 'red';
+      return false;
     };
+    
+    // Ensure submit button does absolutely nothing
+    if (submitBtn) {
+      submitBtn.onclick = function(e) {
+        e.preventDefault();
+        submitStatus.textContent = '❌ Submission disabled. Cannot add new whitelist entries. Existing data displayed below.';
+        submitStatus.style.color = 'red';
+        return false;
+      };
+    }
     
     walletInput.addEventListener('input', checkAllTasks);
     twitterUsernameInput.addEventListener('input', checkAllTasks);
@@ -655,6 +594,9 @@
             updateUSTime();
             checkAllTasks();
             if (dbAvailable) setupLiveListener();
+            // initial render for empty dataset
+            renderAddressModal();
+            renderLeaderboardModal();
           }, 500);
         }
       }, 280);
