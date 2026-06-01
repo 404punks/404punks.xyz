@@ -171,7 +171,7 @@
       </div>
 
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 11px;">📅 Mint Date</span></div>
+        <div class="title-bar"><span style="font-size: 13px;">📅 Mint Date</span></div>
         <div class="p-3 text-center">
           <p class="text-2xl" style="color: #800000;">June 8, 2026 (ET)</p>
           <p class="text-sm">Blockchain: Ethereum (ETH)</p>
@@ -199,14 +199,21 @@
         </div>
       </div>
 
+      <!-- UPDATED FORM: Wallet + Twitter Username (example @404punkslab) + Referral Friend Twitter -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet Address</span></div>
+        <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet & Social Info</span></div>
         <div class="p-4">
           <div class="win95-inset p-1 mb-3">
             <input type="text" id="wallet-input" placeholder="0x... Enter your ETH wallet address" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
           </div>
+          <div class="win95-inset p-1 mb-3">
+            <input type="text" id="twitter-username" placeholder="@404punkslab (your Twitter handle)" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
+          </div>
+          <div class="win95-inset p-1 mb-3">
+            <input type="text" id="referral-friend" placeholder="Referral: @friendTwitterHandle (optional)" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
+          </div>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-sm" id="submit-status" style="color: #808080;">Complete all tasks to claim WL</p>
+            <p class="text-sm" id="submit-status" style="color: #808080;">Complete all tasks & fill wallet + Twitter handle</p>
             <button class="win95-btn text-lg" id="submit-btn" onclick="submitWallet()" disabled style="opacity: 0.5;">Claim Whitelist</button>
           </div>
         </div>
@@ -220,7 +227,7 @@
   </div>
 
   <script>
-    // Firebase Configuration
+    // Firebase Configuration (same as provided)
     const firebaseConfig = {
       apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
       authDomain: "punkswl.firebaseapp.com",
@@ -243,6 +250,8 @@
     const submitBtn = document.getElementById('submit-btn');
     const submitStatus = document.getElementById('submit-status');
     const walletInput = document.getElementById('wallet-input');
+    const twitterUsernameInput = document.getElementById('twitter-username');
+    const referralFriendInput = document.getElementById('referral-friend');
     
     // Initialize Firebase with Realtime Database
     try {
@@ -255,7 +264,7 @@
       dbAvailable = false;
     }
     
-    // LIVE REAL-TIME LISTENER - This updates for everyone instantly
+    // LIVE REAL-TIME LISTENER - updates whitelist count dynamically
     function setupLiveListener() {
       if (!dbAvailable || !database) return;
       
@@ -295,8 +304,26 @@
       return false;
     }
     
-    async function addWhitelistEntry(walletAddress) {
+    // Check if same twitter handle already used (basic anti-spam)
+    async function isTwitterHandleUsed(twitterHandle) {
+      if (!twitterHandle || !dbAvailable || !database) return false;
+      const normalized = twitterHandle.trim().toLowerCase();
+      if (normalized === "") return false;
+      const snapshot = await database.ref('whitelist').once('value');
+      const data = snapshot.val();
+      if (!data) return false;
+      for (let key in data) {
+        if (data[key].twitter_handle && data[key].twitter_handle.toLowerCase() === normalized) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    async function addWhitelistEntry(walletAddress, twitterHandle, referralFriend) {
       const lowerAddress = walletAddress.toLowerCase();
+      const cleanTwitter = twitterHandle.trim() || "";
+      const cleanReferral = referralFriend.trim() || "";
       
       if (!dbAvailable || !database) {
         return { success: false, error: "Database not connected" };
@@ -308,12 +335,22 @@
           return { success: false, error: "Wallet already whitelisted" };
         }
         
+        // Optional: prevent duplicate twitter handle (fairness)
+        if (cleanTwitter !== "") {
+          const twitterTaken = await isTwitterHandleUsed(cleanTwitter);
+          if (twitterTaken) {
+            return { success: false, error: "This Twitter handle already used for whitelist." };
+          }
+        }
+        
         if (whitelistCount >= MAX_SLOTS) {
           return { success: false, error: "All slots filled" };
         }
         
         const newEntry = {
           wallet_address: lowerAddress,
+          twitter_handle: cleanTwitter,
+          referral_friend: cleanReferral,
           claimed_at: new Date().toISOString(),
           timestamp: Date.now()
         };
@@ -341,18 +378,33 @@
     
     function checkAllTasks() {
       const allDone = tasks.follow && tasks.like && tasks.retweet;
-      if (allDone && !currentUserSubmitted) {
+      const hasWallet = walletInput.value.trim().startsWith('0x') && walletInput.value.trim().length >= 10;
+      const hasTwitter = twitterUsernameInput.value.trim().length > 0;
+      
+      if (allDone && !currentUserSubmitted && hasWallet && hasTwitter) {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
-        submitStatus.textContent = 'All tasks completed! Enter your wallet.';
+        submitStatus.textContent = 'All tasks complete & info valid! Click Claim.';
         submitStatus.style.color = 'green';
       } else if (currentUserSubmitted) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.5';
+      } else if (!allDone) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitStatus.textContent = 'Complete all 3 tasks first.';
+      } else if (!hasWallet) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitStatus.textContent = 'Enter valid Ethereum wallet (0x...).';
+      } else if (!hasTwitter) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitStatus.textContent = 'Enter your Twitter username (e.g., @404punkslab).';
       } else {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.5';
-        submitStatus.textContent = 'Complete all 3 tasks to claim WL';
+        submitStatus.textContent = 'Complete all tasks & fill wallet + Twitter.';
       }
     }
     
@@ -393,8 +445,17 @@
       }
       
       const addr = walletInput.value.trim();
+      const twitterUser = twitterUsernameInput.value.trim();
+      const referralFriend = referralFriendInput.value.trim();
+      
       if (!addr || !addr.startsWith('0x') || addr.length < 10) {
         submitStatus.textContent = 'Invalid ETH address! (must start with 0x)';
+        submitStatus.style.color = 'red';
+        return;
+      }
+      
+      if (!twitterUser) {
+        submitStatus.textContent = 'Please enter your Twitter username (e.g., @404punkslab).';
         submitStatus.style.color = 'red';
         return;
       }
@@ -414,15 +475,20 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
       
-      const result = await addWhitelistEntry(addr);
+      const result = await addWhitelistEntry(addr, twitterUser, referralFriend);
       
       if (result.success) {
         currentUserSubmitted = true;
         submitBtn.textContent = 'Claimed!';
         submitBtn.style.background = '#000080';
         submitBtn.style.color = '#fff';
-        submitStatus.textContent = 'Whitelist spot secured! See you on mint day.';
+        submitStatus.textContent = 'Whitelist spot secured! Twitter & referral saved. See you on mint day.';
         submitStatus.style.color = '#000080';
+        
+        // Disable input fields after successful claim to prevent changes
+        walletInput.disabled = true;
+        twitterUsernameInput.disabled = true;
+        referralFriendInput.disabled = true;
       } else {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Claim Whitelist';
@@ -433,9 +499,13 @@
       }
     };
     
-    async function checkWalletExists() {
+    async function checkWalletAndTwitterExists() {
       const addr = walletInput.value.trim();
-      if (!addr || addr.length < 5) return;
+      const twHandle = twitterUsernameInput.value.trim();
+      if (!addr || addr.length < 5) {
+        checkAllTasks();
+        return;
+      }
       
       const exists = await isWalletAlreadyWhitelisted(addr);
       if (exists) {
@@ -443,15 +513,36 @@
         submitStatus.style.color = '#800000';
         submitBtn.disabled = true;
         currentUserSubmitted = true;
-      } else if (tasks.follow && tasks.like && tasks.retweet && !currentUserSubmitted) {
+        return;
+      }
+      
+      if (twHandle && twHandle.length > 0) {
+        const twitterUsed = await isTwitterHandleUsed(twHandle);
+        if (twitterUsed) {
+          submitStatus.textContent = 'Twitter handle already used for another whitelist entry.';
+          submitStatus.style.color = 'red';
+          submitBtn.disabled = true;
+          return;
+        }
+      }
+      
+      if (tasks.follow && tasks.like && tasks.retweet && !currentUserSubmitted && addr.startsWith('0x') && addr.length >= 10 && twHandle.length > 0) {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
         submitStatus.textContent = 'Ready to claim!';
         submitStatus.style.color = 'green';
+      } else {
+        checkAllTasks();
       }
     }
     
-    walletInput.addEventListener('input', checkWalletExists);
+    walletInput.addEventListener('input', checkWalletAndTwitterExists);
+    twitterUsernameInput.addEventListener('input', checkWalletAndTwitterExists);
+    referralFriendInput.addEventListener('input', () => {
+      // No additional validation, but re-trigger if needed
+      if (currentUserSubmitted) return;
+      checkAllTasks();
+    });
     
     function updateUSTime() {
       const now = new Date();
@@ -502,9 +593,14 @@
       submitBtn.textContent = 'Claim Whitelist';
       submitBtn.style.background = '';
       submitBtn.style.color = '';
-      submitStatus.textContent = 'Complete all tasks to claim WL';
+      submitStatus.textContent = 'Complete all tasks & fill wallet + Twitter handle';
       submitStatus.style.color = '#808080';
       walletInput.value = '';
+      twitterUsernameInput.value = '';
+      referralFriendInput.value = '';
+      walletInput.disabled = false;
+      twitterUsernameInput.disabled = false;
+      referralFriendInput.disabled = false;
     }
     
     document.addEventListener('DOMContentLoaded', async () => {
