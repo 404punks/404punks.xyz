@@ -39,10 +39,6 @@
     .win95-btn:active {
       border-color: #808080 #ffffff #ffffff #808080;
     }
-    .win95-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
     .title-bar {
       background: linear-gradient(90deg, #000080, #1084d0);
       color: white;
@@ -174,6 +170,16 @@
       border-radius: 2px;
       font-weight: bold;
     }
+    .notification-bell {
+      background: #ff0000;
+      color: white;
+      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      margin-left: 5px;
+      animation: blink 1s infinite;
+    }
   </style>
 </head>
 <body class="h-full overflow-auto" style="background: #008080;">
@@ -206,7 +212,7 @@
       
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar">
-          <span style="font-size: 13px;">🖥️ 404 Punks Labs - Whitelist Portal</span>
+          <span style="font-size: 13px;">🖥️ 404 Punks Labs - Whitelist Portal [CLOSED]</span>
           <div class="flex gap-1">
             <div class="title-bar-btn">_</div>
             <div class="title-bar-btn">□</div>
@@ -214,8 +220,9 @@
           </div>
         </div>
         <div class="p-4 text-center">
-          <h1 class="press-start text-sm md:text-base mb-2" style="color: #000080;">404 PUNKS LABS</h1>
+          <h1 class="press-start text-sm md:text-base mb-2" style="color: #800000;">🔒 WHITELIST PORTAL CLOSED</h1>
           <p class="text-xl">10,000 Original NFTs on Ethereum Blockchain</p>
+          <p class="text-sm mt-2" style="color: #800000;">⚠️ Whitelist submissions are no longer accepted</p>
         </div>
       </div>
 
@@ -226,15 +233,12 @@
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">GDT Mint</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: green;">FREE</p><p class="text-sm">0 ETH</p></div></div>
       </div>
 
-      <!-- LIVE Counter - TRACKING NEW SUBMISSIONS (permanent storage) -->
+      <!-- LIVE Counter - Read Only from Firebase -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 11px;">📡 LIVE - Whitelist Claims</span><div class="live-dot"></div></div>
+        <div class="title-bar"><span style="font-size: 11px;">📡 TOTAL WHITELISTED WALLETS</span><div class="live-dot"></div></div>
         <div class="p-4 flex items-center justify-center gap-4 flex-wrap">
           <div class="win95-inset px-6 py-3 bg-black"><span class="text-3xl" style="color: #00ff00;" id="live-counter">0</span> <span class="text-lg" style="color: #00ff00;"> / 9,900</span></div>
-          <p class="text-lg">Wallets Whitelisted (Permanent)</p>
-        </div>
-        <div id="closed-banner" class="hidden px-4 pb-3 text-center">
-          <span class="closed-badge">🔒 WHITELIST CLOSED - 10,000 SLOTS FILLED</span>
+          <p class="text-lg">Total Whitelisted Addresses</p>
         </div>
       </div>
 
@@ -246,57 +250,60 @@
         </div>
       </div>
 
-      <!-- TASKS: Updated: #3 Retweet & Tag 3 Friends -->
+      <!-- SOCIAL TASKS - Updated to X.com -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📋 Whitelist Tasks - Complete All to Claim</span></div>
+        <div class="title-bar"><span style="font-size: 13px;">📋 X (Twitter) Tasks - Required for Whitelist</span></div>
         <div class="p-4 space-y-3">
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-follow">
             <div class="task-check" id="check-follow"></div>
-            <span class="text-lg flex-1">Follow @404punklab on Twitter</span>
-            <a href="https://x.com/404punklab" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Verify ↗</button></a>
+            <span class="text-lg flex-1">Follow <strong>@404punklab</strong> on X (Twitter) <span class="notification-bell"></span></span>
+            <a href="https://x.com/404punklab" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Follow on X ↗</button></a>
           </div>
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-like">
             <div class="task-check" id="check-like"></div>
-            <span class="text-lg flex-1">Like the Announcement Tweet</span>
-            <a href="https://x.com/i/status/2061744339668328730" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('like', this)">Verify ↗</button></a>
+            <span class="text-lg flex-1">Like the pinned announcement post on X</span>
+            <a href="https://x.com/i/status/2061744339668328730" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('like', this)">Like Post ↗</button></a>
           </div>
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-retweet">
             <div class="task-check" id="check-retweet"></div>
-            <span class="text-lg flex-1">Retweet & Tag 3 Friends</span>
-            <a href="https://x.com/i/status/2061721046970232998" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('retweet', this)">Verify ↗</button></a>
+            <span class="text-lg flex-1">Retweet & Tag 3 Friends on X</span>
+            <a href="https://x.com/i/status/2061721046970232998" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('retweet', this)">Retweet ↗</button></a>
           </div>
+        </div>
+        <div class="px-4 pb-3 text-xs text-center text-gray-700">
+          💡 <strong>Enable Notifications</strong> - Follow @404punklab and turn on notifications to stay updated!
         </div>
       </div>
 
-      <!-- FORM: Wallet + Retweet Link + Referral -->
-      <div class="win95-border p-0 mb-4 fade-in" id="form-container">
-        <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet & Retweet Link</span></div>
+      <!-- SUBMIT FORM - DISABLED (Portal Closed) -->
+      <div class="win95-border p-0 mb-4 fade-in" id="form-container" style="opacity: 0.6;">
+        <div class="title-bar"><span style="font-size: 13px;">🔒 WHITELIST SUBMISSION - CLOSED</span></div>
         <div class="p-4">
           <div class="win95-inset p-1 mb-3">
-            <input type="text" id="wallet-input" placeholder="0x... Enter your ETH wallet address" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
+            <input type="text" id="wallet-input" placeholder="0x... Enter your ETH wallet address" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
           </div>
           <div class="win95-inset p-1 mb-3">
-            <input type="text" id="retweet-link" placeholder="https://x.com/yourpost/status/... (Your Retweet Link with 3 tags)" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
-            <p class="text-xs mt-1 text-gray-600">*Paste link to your retweet proving you tagged 3 friends</p>
+            <input type="text" id="retweet-link" placeholder="https://x.com/yourpost/status/... (Retweet Link)" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
+            <p class="text-xs mt-1 text-gray-600">*Portal closed - no new submissions accepted</p>
           </div>
           <div class="win95-inset p-1 mb-3">
-            <input type="text" id="referral-friend" placeholder="Referral: @friendTwitterHandle (optional)" class="w-full p-2 text-lg bg-white border-none outline-none" style="font-family: 'VT323', monospace;">
+            <input type="text" id="referral-friend" placeholder="Referral: @friendTwitterHandle (optional)" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
           </div>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-sm" id="submit-status" style="color: #2b6e2b;">✅ Complete tasks, enter wallet & retweet link to claim WL!</p>
-            <button class="win95-btn text-lg" id="submit-btn">🚀 Claim Whitelist</button>
+            <p class="text-sm" id="submit-status" style="color: #800000;">🔒 WHITELIST PORTAL IS CLOSED - No more submissions accepted</p>
+            <button class="win95-btn text-lg" id="submit-btn" disabled style="opacity:0.5; cursor:not-allowed;">🔒 Closed</button>
           </div>
         </div>
       </div>
 
-      <!-- Admin Buttons: View Addresses & Leaderboard (read from NEW DB - permanent) -->
+      <!-- Admin Buttons: View Addresses & Leaderboard -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📊 Whitelist Data</span></div>
+        <div class="title-bar"><span style="font-size: 13px;">📊 Whitelist Data Viewer</span></div>
         <div class="p-4 flex flex-wrap gap-4 justify-center">
           <button class="win95-btn text-lg px-6" onclick="openAddressModal()">📋 View Whitelist Addresses</button>
           <button class="win95-btn text-lg px-6" onclick="openLeaderboardModal()">🏆 Referral Leaderboard</button>
         </div>
-        <div class="px-4 pb-3 text-xs text-center text-gray-700">*Live data from permanent whitelist storage</div>
+        <div class="px-4 pb-3 text-xs text-center text-gray-700">*View all whitelisted addresses (masked) and referral rankings</div>
       </div>
 
       <div class="win95-border p-2 flex items-center justify-between fade-in flex-wrap gap-2">
@@ -309,15 +316,24 @@
   <!-- MODAL: Whitelist Address Viewer -->
   <div id="addressModal" class="modal">
     <div class="modal-window win95-border">
-      <div class="title-bar"><span>📋 Whitelist Participants</span><div class="title-bar-btn" onclick="closeAddressModal()">×</div></div>
+      <div class="title-bar"><span>📋 Whitelist Participants (Addresses)</span><div class="title-bar-btn" onclick="closeAddressModal()">×</div></div>
       <div class="modal-content">
-        <div class="win95-inset p-1 mb-2"><input type="text" id="modal-search" placeholder="🔍 Search by address" class="w-full p-2 bg-white border-none outline-none text-lg"></div>
+        <div class="win95-inset p-1 mb-2">
+          <input type="text" id="modal-search" placeholder="🔍 Search by wallet address" class="w-full p-2 bg-white border-none outline-none text-lg">
+        </div>
         <div style="max-height: 400px; overflow-y: auto;">
-          <table class="whitelist-table"><thead><tr><th>#</th><th>Wallet Address (masked)</th><th>Submission Time (US/ET)</th><th>Referral</th></tr></thead>
-            <tbody id="modal-whitelist-tbody"><tr><td colspan="4" class="text-center">Loading data...</td></tr></tbody>
+          <table class="whitelist-table w-full">
+            <thead>
+              <tr><th>#</th><th>Wallet Address (masked)</th><th>Submission Time (US/ET)</th><th>Referral</th></tr>
+            </thead>
+            <tbody id="modal-whitelist-tbody">
+              <tr><td colspan="4" class="text-center">Loading whitelist data...</td></tr>
+            </tbody>
           </table>
         </div>
-        <div class="close-modal-btn"><button class="win95-btn" onclick="closeAddressModal()">Close</button></div>
+        <div class="close-modal-btn">
+          <button class="win95-btn" onclick="closeAddressModal()">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -326,59 +342,47 @@
   <div id="leaderboardModal" class="modal">
     <div class="modal-window win95-border">
       <div class="title-bar"><span>🏆 Referral Leaderboard (Top 25)</span><div class="title-bar-btn" onclick="closeLeaderboardModal()">×</div></div>
-      <div class="modal-content"><div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;"><div class="text-center p-4">Loading leaderboard...</div></div>
-        <div class="close-modal-btn mt-2"><button class="win95-btn" onclick="closeLeaderboardModal()">Close</button></div>
+      <div class="modal-content">
+        <div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;">
+          <div class="text-center p-4">Loading leaderboard...</div>
+        </div>
+        <div class="close-modal-btn mt-2">
+          <button class="win95-btn" onclick="closeLeaderboardModal()">Close</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // SINGLE FIREBASE DATABASE FOR PERMANENT STORAGE
-    const FIREBASE_CONFIG = {
-      apiKey: "AIzaSyAKB5M6aesGShgNco4MMk76Vz4uQMEH4qw",
-      authDomain: "wldata-4fbbb.firebaseapp.com",
-      databaseURL: "https://wldata-4fbbb-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "wldata-4fbbb",
-      storageBucket: "wldata-4fbbb.firebasestorage.app",
-      messagingSenderId: "393621217150",
-      appId: "1:393621217150:web:3a9105360b30ead396dd2f",
-      measurementId: "G-55EDGHL641"
+    // Firebase Configuration (Original punkswl database)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
+      authDomain: "punkswl.firebaseapp.com",
+      databaseURL: "https://punkswl-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "punkswl",
+      storageBucket: "punkswl.firebasestorage.app",
+      messagingSenderId: "810500731524",
+      appId: "1:810500731524:web:c6c52dd5191a19a67348d1",
+      measurementId: "G-7SXN0TR713"
     };
-    
-    let database = null;
-    let dbAvailable = false;
-    let whitelistCount = 0;
-    let whitelistData = [];
-    const MAX_SLOTS = 10000;  // 10,000 max submissions, then form closes permanently
-    
-    const liveCounterSpan = document.getElementById('live-counter');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitStatus = document.getElementById('submit-status');
-    const walletInput = document.getElementById('wallet-input');
-    const retweetLinkInput = document.getElementById('retweet-link');
-    const referralFriendInput = document.getElementById('referral-friend');
-    const formContainer = document.getElementById('form-container');
-    const closedBanner = document.getElementById('closed-banner');
-    
-    let tasks = { follow: false, like: false, retweet: false };
-    let formClosed = false;
-    
+
     // Initialize Firebase
+    let database = null;
+    let allEntries = [];
+    let whitelistCount = 0;
+    
     try {
-      const app = firebase.initializeApp(FIREBASE_CONFIG);
-      database = firebase.database(app);
-      dbAvailable = true;
-      console.log("Firebase initialized for PERMANENT storage");
-    } catch (err) {
+      firebase.initializeApp(firebaseConfig);
+      database = firebase.database();
+      console.log("✅ Firebase connected to punkswl database");
+    } catch(err) {
       console.error("Firebase init error:", err);
-      dbAvailable = false;
     }
     
-    function formatUSTime(isoStringOrTimestamp) {
-      let date;
-      if (!isoStringOrTimestamp) date = new Date();
-      else if (typeof isoStringOrTimestamp === 'string') date = new Date(isoStringOrTimestamp);
-      else date = new Date(isoStringOrTimestamp);
+    // Helper Functions
+    function formatUSTime(timestamp) {
+      if (!timestamp) return 'Unknown';
+      let date = new Date(timestamp);
       return new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/New_York',
         year: 'numeric', month: '2-digit', day: '2-digit',
@@ -392,98 +396,151 @@
       return address.slice(0, 6) + '...' + address.slice(-4);
     }
     
-    // Close form when max slots reached
-    function closeFormPermanently() {
-      if (formClosed) return;
-      formClosed = true;
-      if (formContainer) {
-        formContainer.style.opacity = '0.5';
-        const submitBtnElem = formContainer.querySelector('#submit-btn');
-        if (submitBtnElem) {
-          submitBtnElem.disabled = true;
-          submitBtnElem.style.opacity = '0.5';
-          submitBtnElem.style.cursor = 'not-allowed';
-        }
-        const inputs = formContainer.querySelectorAll('input');
-        inputs.forEach(input => input.disabled = true);
-        submitStatus.textContent = '🔒 Whitelist is FULL (10,000 slots claimed). Portal closed.';
-        submitStatus.style.color = '#800000';
+    // Load data from Firebase (READ ONLY - punkswl database)
+    function loadWhitelistData() {
+      if (!database) {
+        console.error("Database not available");
+        document.getElementById('modal-whitelist-tbody').innerHTML = '<tr><td colspan="4" class="text-center">❌ Database connection failed</td></tr>';
+        return;
       }
-      if (closedBanner) closedBanner.classList.remove('hidden');
-    }
-    
-    // LIVE listener for permanent data - NO AUTO-DELETE
-    function setupLiveListener() {
-      if (!dbAvailable || !database) return;
-      const whitelistRef = database.ref('whitelist_submissions');
+      
+      const whitelistRef = database.ref('whitelist');
       whitelistRef.on('value', (snapshot) => {
         const data = snapshot.val();
         const newList = [];
+        
         if (data) {
           Object.keys(data).forEach(key => {
             const item = data[key];
             newList.push({
               id: key,
-              wallet_address: item.wallet_address || "",
-              retweet_link: item.retweet_link || "",
-              referral_friend: item.referral_friend || "",
+              wallet_address: item.wallet_address || '',
+              twitter_handle: item.twitter_handle || '',
+              referral_friend: item.referral_friend || '',
               claimed_at: item.claimed_at || null,
               timestamp: item.timestamp || Date.now()
             });
           });
         }
-        // Sort by timestamp ascending (oldest first)
-        newList.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
-        whitelistData = newList;
-        whitelistCount = whitelistData.length;
-        liveCounterSpan.innerText = whitelistCount;
         
-        // Check if max slots reached (10,000)
-        if (whitelistCount >= MAX_SLOTS) {
-          closeFormPermanently();
-        }
+        // Sort by timestamp (oldest first)
+        newList.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        allEntries = newList;
+        whitelistCount = allEntries.length;
+        
+        // Update live counter
+        const liveCounter = document.getElementById('live-counter');
+        if (liveCounter) liveCounter.innerText = whitelistCount;
+        
+        console.log(`📊 Loaded ${whitelistCount} whitelist entries from punkswl database`);
         
         // Refresh modals if open
-        if (document.getElementById('addressModal').style.display === 'flex') renderAddressModal();
-        if (document.getElementById('leaderboardModal').style.display === 'flex') renderLeaderboardModal();
+        if (document.getElementById('addressModal') && document.getElementById('addressModal').style.display === 'flex') {
+          renderAddressModal();
+        }
+        if (document.getElementById('leaderboardModal') && document.getElementById('leaderboardModal').style.display === 'flex') {
+          renderLeaderboardModal();
+        }
+      }, (error) => {
+        console.error("Firebase read error:", error);
+        document.getElementById('modal-whitelist-tbody').innerHTML = '<tr><td colspan="4" class="text-center">❌ Error loading data</td></tr>';
       });
     }
+    
+    // Render Address Modal (with search and masked addresses)
+    function renderAddressModal() {
+      const tbody = document.getElementById('modal-whitelist-tbody');
+      if (!tbody) return;
+      
+      let filtered = [...allEntries];
+      const searchTerm = document.getElementById('modal-search')?.value.trim().toLowerCase() || '';
+      
+      if (searchTerm) {
+        filtered = filtered.filter(entry => 
+          entry.wallet_address && entry.wallet_address.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No whitelist entries found</td></tr>';
+        return;
+      }
+      
+      let html = '';
+      filtered.forEach((entry, idx) => {
+        const rank = idx + 1;
+        const maskedWallet = maskAddress(entry.wallet_address);
+        const timeStr = entry.claimed_at ? formatUSTime(entry.claimed_at) : formatUSTime(entry.timestamp);
+        const referralDisplay = entry.referral_friend ? entry.referral_friend.substring(0, 25) : '—';
+        
+        html += `<tr>
+          <td>${rank}</td>
+          <td title="${entry.wallet_address}">${maskedWallet}</td>
+          <td>${timeStr}</td>
+          <td>${referralDisplay}</td>
+        </tr>`;
+      });
+      
+      tbody.innerHTML = html;
+    }
+    
+    // Render Leaderboard Modal (based on referral counts)
+    function renderLeaderboardModal() {
+      const container = document.getElementById('leaderboard-list');
+      if (!container) return;
+      
+      const referralMap = new Map();
+      
+      allEntries.forEach(entry => {
+        let ref = entry.referral_friend;
+        if (ref && typeof ref === 'string' && ref.trim() !== "") {
+          let normalized = ref.trim().toLowerCase();
+          let displayName = ref.trim();
+          if (!normalized.startsWith('@')) {
+            normalized = '@' + normalized;
+            displayName = '@' + displayName;
+          } else {
+            displayName = normalized;
+          }
+          
+          if (referralMap.has(normalized)) {
+            referralMap.get(normalized).count++;
+          } else {
+            referralMap.set(normalized, { displayName, count: 1 });
+          }
+        }
+      });
+      
+      const sorted = Array.from(referralMap.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 25);
+      
+      if (sorted.length === 0) {
+        container.innerHTML = '<div class="text-center p-4">No referral submissions yet.</div>';
+        return;
+      }
+      
+      let html = '';
+      sorted.forEach((item, idx) => {
+        html += `<div class="leaderboard-item">
+          <span><strong>${idx + 1}.</strong> ${item.displayName}</span>
+          <span class="bg-black text-green-400 px-2 py-0.5 font-mono text-xl">${item.count}</span>
+        </div>`;
+      });
+      
+      container.innerHTML = html;
+    }
+    
+    // Task verification (for visual feedback only - portal is closed)
+    let tasks = { follow: false, like: false, retweet: false };
     
     function completeTaskUI(task) {
       if (tasks[task]) return;
       tasks[task] = true;
       const checkDiv = document.getElementById('check-' + task);
-      if (checkDiv) { checkDiv.classList.add('checked'); checkDiv.innerHTML = '✓'; }
-      checkAllTasks();
-    }
-    
-    function checkAllTasks() {
-      if (formClosed) return;
-      const allDone = tasks.follow && tasks.like && tasks.retweet;
-      const hasWallet = walletInput.value.trim().startsWith('0x') && walletInput.value.trim().length >= 10;
-      const hasRetweetLink = retweetLinkInput.value.trim().length > 5 && (retweetLinkInput.value.trim().includes('x.com') || retweetLinkInput.value.trim().includes('twitter.com'));
-      
-      if (allDone && hasWallet && hasRetweetLink) {
-        submitStatus.textContent = '✅ All tasks completed! Ready to claim whitelist.';
-        submitStatus.style.color = '#2b6e2b';
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        submitBtn.style.cursor = 'pointer';
-      } else if (!allDone) {
-        submitStatus.textContent = '⚠️ Please complete all 3 tasks (Follow, Like, Retweet & Tag 3).';
-        submitStatus.style.color = '#a06500';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-      } else if (!hasWallet) {
-        submitStatus.textContent = '⚠️ Enter a valid Ethereum wallet (0x...).';
-        submitStatus.style.color = '#a06500';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-      } else if (!hasRetweetLink) {
-        submitStatus.textContent = '⚠️ Provide your Retweet link (must include proof of tagging 3 friends).';
-        submitStatus.style.color = '#a06500';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
+      if (checkDiv) {
+        checkDiv.classList.add('checked');
+        checkDiv.innerHTML = '✓';
       }
     }
     
@@ -492,212 +549,104 @@
       btnElement.disabled = true;
       btnElement.textContent = 'Verifying...';
       await new Promise(resolve => setTimeout(resolve, 2000));
-      if (Math.random() > 0.1) {
-        completeTaskUI(task);
-        btnElement.textContent = '✓ Verified';
-        btnElement.style.background = '#008000';
-        btnElement.disabled = true;
-      } else {
-        btnElement.textContent = 'Retry';
-        btnElement.style.background = '#800000';
-        setTimeout(() => {
-          if (!tasks[task]) {
-            btnElement.textContent = 'Verify ↗';
-            btnElement.style.background = '';
-            btnElement.disabled = false;
-          }
-        }, 1500);
-      }
-    };
-    
-    // PERMANENT SUBMIT - data stays, never auto-deleted
-    async function submitToFirebase(wallet, retweetLink, referral) {
-      if (!dbAvailable || !database) {
-        throw new Error("Firebase Database not available.");
-      }
-      const newEntryRef = database.ref('whitelist_submissions').push();
-      const submissionData = {
-        wallet_address: wallet,
-        retweet_link: retweetLink,
-        referral_friend: referral || "",
-        claimed_at: new Date().toISOString(),
-        timestamp: Date.now(),
-        status: "whitelisted",
-        source: "portal"
-      };
-      await newEntryRef.set(submissionData);
-      return newEntryRef.key;
-    }
-    
-    async function isWalletAlreadyExists(wallet) {
-      if (!dbAvailable) return false;
-      const snapshot = await database.ref('whitelist_submissions').orderByChild('wallet_address').equalTo(wallet).once('value');
-      return snapshot.exists();
-    }
-    
-    window.submitWhitelist = async function() {
-      if (formClosed) {
-        submitStatus.textContent = '❌ Whitelist is already full (10,000 slots claimed).';
-        submitStatus.style.color = 'red';
-        return false;
-      }
+      completeTaskUI(task);
+      btnElement.textContent = '✓ Verified';
+      btnElement.style.background = '#008000';
+      btnElement.disabled = true;
       
-      const wallet = walletInput.value.trim();
-      const retweetLink = retweetLinkInput.value.trim();
-      const referral = referralFriendInput.value.trim();
-      
-      if (!tasks.follow || !tasks.like || !tasks.retweet) {
-        submitStatus.textContent = '❌ Please complete all three tasks first.';
-        submitStatus.style.color = 'red';
-        return false;
-      }
-      if (!wallet.startsWith('0x') || wallet.length < 10) {
-        submitStatus.textContent = '❌ Invalid Ethereum wallet address. Must start with 0x';
-        submitStatus.style.color = 'red';
-        return false;
-      }
-      if (!retweetLink || (!retweetLink.includes('x.com') && !retweetLink.includes('twitter.com'))) {
-        submitStatus.textContent = '❌ Please provide a valid retweet link (Twitter/X URL).';
-        submitStatus.style.color = 'red';
-        return false;
-      }
-      
-      // Check if already whitelisted
-      const alreadyExists = await isWalletAlreadyExists(wallet);
-      if (alreadyExists) {
-        submitStatus.textContent = '⚠️ This wallet has already been whitelisted!';
-        submitStatus.style.color = 'red';
-        return false;
-      }
-      
-      // Check if max slots reached before submission
-      if (whitelistCount >= MAX_SLOTS) {
-        closeFormPermanently();
-        submitStatus.textContent = '❌ Whitelist is full (10,000 slots). Cannot submit.';
-        submitStatus.style.color = 'red';
-        return false;
-      }
-      
-      const originalText = submitBtn.innerText;
-      submitBtn.innerText = 'Submitting...';
-      submitBtn.disabled = true;
-      
-      try {
-        await submitToFirebase(wallet, retweetLink, referral);
-        submitStatus.textContent = '🎉 SUCCESS! You are now whitelisted permanently. Thank you!';
-        submitStatus.style.color = '#006400';
-        walletInput.value = '';
-        retweetLinkInput.value = '';
-        referralFriendInput.value = '';
-        submitBtn.innerText = 'Claimed ✓';
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.6';
-      } catch (err) {
-        console.error(err);
-        submitStatus.textContent = '❌ Submission error. Please refresh and try again.';
-        submitStatus.style.color = 'red';
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-      }
-    };
-    
-    // MODAL rendering from permanent data
-    function renderAddressModal() {
-      const tbody = document.getElementById('modal-whitelist-tbody');
-      if (!tbody) return;
-      let filtered = [...whitelistData];
-      const searchVal = document.getElementById('modal-search')?.value.trim().toLowerCase() || '';
-      if (searchVal) filtered = filtered.filter(e => e.wallet_address && e.wallet_address.toLowerCase().includes(searchVal));
-      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No entries found.</td></tr>'; return; }
-      let html = '';
-      filtered.forEach((entry, idx) => {
-        const globalRank = whitelistData.findIndex(e => e.id === entry.id) + 1;
-        const masked = maskAddress(entry.wallet_address);
-        const timeStr = entry.claimed_at ? formatUSTime(entry.claimed_at) : (entry.timestamp ? formatUSTime(entry.timestamp) : 'Unknown');
-        const referralDisplay = entry.referral_friend ? entry.referral_friend.substring(0, 20) : '—';
-        html += `<tr><td>${globalRank}</td><td title="${entry.wallet_address}">${masked}</td><td>${timeStr}</td><td>${referralDisplay}</td></tr>`;
-      });
-      tbody.innerHTML = html;
-    }
-    
-    function renderLeaderboardModal() {
-      const container = document.getElementById('leaderboard-list');
-      if (!container) return;
-      const referralCountMap = new Map();
-      whitelistData.forEach(entry => {
-        let ref = entry.referral_friend;
-        if (ref && typeof ref === 'string' && ref.trim() !== "") {
-          let normalized = ref.trim().toLowerCase();
-          let displayName = ref.trim();
-          if (!normalized.startsWith('@')) { normalized = '@' + normalized; displayName = '@' + displayName; }
-          else displayName = normalized;
-          if (referralCountMap.has(normalized)) referralCountMap.get(normalized).count++;
-          else referralCountMap.set(normalized, { displayName, count: 1 });
+      // Show notification reminder
+      if (task === 'follow') {
+        const statusDiv = document.getElementById('submit-status');
+        if (statusDiv) {
+          statusDiv.innerHTML = '💡 Tip: Enable notifications on X to stay updated about the mint!';
+          statusDiv.style.color = '#000080';
+          setTimeout(() => {
+            statusDiv.innerHTML = '🔒 WHITELIST PORTAL IS CLOSED - No more submissions accepted';
+            statusDiv.style.color = '#800000';
+          }, 3000);
         }
-      });
-      let arr = Array.from(referralCountMap.values()).sort((a,b) => b.count - a.count).slice(0,25);
-      if (arr.length === 0) { container.innerHTML = '<div class="text-center p-4">No referrals yet. Be the first!</div>'; return; }
-      let html = '';
-      arr.forEach((item, idx) => {
-        html += `<div class="leaderboard-item"><span><strong>${idx+1}.</strong> ${item.displayName}</span><span class="bg-black text-green-400 px-2 py-0.5 font-mono text-xl">${item.count}</span></div>`;
-      });
-      container.innerHTML = html;
-    }
-    
-    window.openAddressModal = function() {
-      const modal = document.getElementById('addressModal');
-      modal.style.display = 'flex';
-      renderAddressModal();
-      const searchInputModal = document.getElementById('modal-search');
-      if (searchInputModal) {
-        searchInputModal.value = '';
-        searchInputModal.oninput = () => renderAddressModal();
       }
     };
-    window.closeAddressModal = function() { document.getElementById('addressModal').style.display = 'none'; };
-    window.openLeaderboardModal = function() {
-      const modal = document.getElementById('leaderboardModal');
-      modal.style.display = 'flex';
-      renderLeaderboardModal();
-    };
-    window.closeLeaderboardModal = function() { document.getElementById('leaderboardModal').style.display = 'none'; };
     
+    // Clock update
     function updateUSTime() {
       const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
       const clockDisplay = document.getElementById('clock-display');
       if (clockDisplay) clockDisplay.textContent = formatter.format(now);
     }
     setInterval(updateUSTime, 1000);
     
+    // Modal functions
+    window.openAddressModal = function() {
+      const modal = document.getElementById('addressModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        renderAddressModal();
+        
+        const searchInput = document.getElementById('modal-search');
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.oninput = () => renderAddressModal();
+        }
+      }
+    };
+    
+    window.closeAddressModal = function() {
+      document.getElementById('addressModal').style.display = 'none';
+    };
+    
+    window.openLeaderboardModal = function() {
+      const modal = document.getElementById('leaderboardModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        renderLeaderboardModal();
+      }
+    };
+    
+    window.closeLeaderboardModal = function() {
+      document.getElementById('leaderboardModal').style.display = 'none';
+    };
+    
+    // Loading animation
     function startLoading() {
       let progress = 0;
-      const loadingTexts = ['Loading system files...', 'Connecting to Ethereum...', 'Initializing NFT database...', 'Syncing Live Counter...', 'Verifying blockchain...', 'Portal ready!'];
+      const loadingTexts = [
+        'Loading system files...',
+        'Connecting to Firebase...',
+        'Loading whitelist data...',
+        'Indexing wallet addresses...',
+        'Portal ready! (Closed Mode)'
+      ];
+      
       const interval = setInterval(() => {
-        progress = Math.min(progress + (Math.random() * 9 + 4), 100);
+        progress = Math.min(progress + (Math.random() * 12 + 3), 100);
         document.getElementById('loading-bar').style.width = progress + '%';
-        let idx = Math.min(Math.floor(progress / 18), loadingTexts.length - 1);
+        
+        let idx = Math.min(Math.floor(progress / 20), loadingTexts.length - 1);
         document.getElementById('loading-text').textContent = loadingTexts[idx];
+        
         if (progress >= 100) {
           clearInterval(interval);
           setTimeout(() => {
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('main-portal').classList.remove('hidden');
             updateUSTime();
-            if (dbAvailable) setupLiveListener();
-            checkAllTasks();
+            loadWhitelistData();
           }, 500);
         }
-      }, 280);
+      }, 250);
     }
     
-    walletInput.addEventListener('input', checkAllTasks);
-    retweetLinkInput.addEventListener('input', checkAllTasks);
-    referralFriendInput.addEventListener('input', checkAllTasks);
-    if (submitBtn) submitBtn.onclick = (e) => { e.preventDefault(); submitWhitelist(); };
-    
-    document.addEventListener('DOMContentLoaded', () => { startLoading(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      startLoading();
+    });
   </script>
 </body>
 </html>
