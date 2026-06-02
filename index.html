@@ -167,6 +167,13 @@
       margin-top: 8px;
       text-align: right;
     }
+    .closed-badge {
+      background: #800000;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body class="h-full overflow-auto" style="background: #008080;">
@@ -219,12 +226,15 @@
         <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">GDT Mint</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: green;">FREE</p><p class="text-sm">0 ETH</p></div></div>
       </div>
 
-      <!-- LIVE Counter - NOW TRACKING NEW SUBMISSIONS ONLY (from new Firebase) -->
+      <!-- LIVE Counter - TRACKING NEW SUBMISSIONS (permanent storage) -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 11px;">📡 LIVE - Whitelist Claims (New Submissions)</span><div class="live-dot"></div></div>
+        <div class="title-bar"><span style="font-size: 11px;">📡 LIVE - Whitelist Claims</span><div class="live-dot"></div></div>
         <div class="p-4 flex items-center justify-center gap-4 flex-wrap">
           <div class="win95-inset px-6 py-3 bg-black"><span class="text-3xl" style="color: #00ff00;" id="live-counter">0</span> <span class="text-lg" style="color: #00ff00;"> / 9,900</span></div>
-          <p class="text-lg">Wallets Whitelisted (New DB)</p>
+          <p class="text-lg">Wallets Whitelisted (Permanent)</p>
+        </div>
+        <div id="closed-banner" class="hidden px-4 pb-3 text-center">
+          <span class="closed-badge">🔒 WHITELIST CLOSED - 10,000 SLOTS FILLED</span>
         </div>
       </div>
 
@@ -250,7 +260,6 @@
             <span class="text-lg flex-1">Like the Announcement Tweet</span>
             <a href="https://x.com/i/status/2061744339668328730" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('like', this)">Verify ↗</button></a>
           </div>
-          <!-- UPDATED TASK: Retweet & Tag 3 Friends -->
           <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-retweet">
             <div class="task-check" id="check-retweet"></div>
             <span class="text-lg flex-1">Retweet & Tag 3 Friends</span>
@@ -259,8 +268,8 @@
         </div>
       </div>
 
-      <!-- FORM: Wallet + Retweet Link + Referral (Optional) - SUBMIT ENABLED -> stores in NEW Firebase -->
-      <div class="win95-border p-0 mb-4 fade-in">
+      <!-- FORM: Wallet + Retweet Link + Referral -->
+      <div class="win95-border p-0 mb-4 fade-in" id="form-container">
         <div class="title-bar"><span style="font-size: 13px;">🔑 Submit Wallet & Retweet Link</span></div>
         <div class="p-4">
           <div class="win95-inset p-1 mb-3">
@@ -280,14 +289,14 @@
         </div>
       </div>
 
-      <!-- Admin Buttons: View Addresses & Leaderboard (read from OLD Firebase DB for existing data) -->
+      <!-- Admin Buttons: View Addresses & Leaderboard (read from NEW DB - permanent) -->
       <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📊 Archive / Legacy Data</span></div>
+        <div class="title-bar"><span style="font-size: 13px;">📊 Whitelist Data</span></div>
         <div class="p-4 flex flex-wrap gap-4 justify-center">
-          <button class="win95-btn text-lg px-6" onclick="openAddressModal()">📋 Legacy Whitelist Addresses</button>
-          <button class="win95-btn text-lg px-6" onclick="openLeaderboardModal()">🏆 Legacy Referral Leaderboard</button>
+          <button class="win95-btn text-lg px-6" onclick="openAddressModal()">📋 View Whitelist Addresses</button>
+          <button class="win95-btn text-lg px-6" onclick="openLeaderboardModal()">🏆 Referral Leaderboard</button>
         </div>
-        <div class="px-4 pb-3 text-xs text-center text-gray-700">*Showing data from original punkswl database (existing submissions). New claims are stored separately.</div>
+        <div class="px-4 pb-3 text-xs text-center text-gray-700">*Live data from permanent whitelist storage</div>
       </div>
 
       <div class="win95-border p-2 flex items-center justify-between fade-in flex-wrap gap-2">
@@ -297,36 +306,35 @@
     </div>
   </div>
 
-  <!-- MODAL: Legacy Whitelist Address Viewer (OLD DB) -->
+  <!-- MODAL: Whitelist Address Viewer -->
   <div id="addressModal" class="modal">
     <div class="modal-window win95-border">
-      <div class="title-bar"><span>📋 Legacy Whitelist Participants (Original DB)</span><div class="title-bar-btn" onclick="closeAddressModal()">×</div></div>
+      <div class="title-bar"><span>📋 Whitelist Participants</span><div class="title-bar-btn" onclick="closeAddressModal()">×</div></div>
       <div class="modal-content">
         <div class="win95-inset p-1 mb-2"><input type="text" id="modal-search" placeholder="🔍 Search by address" class="w-full p-2 bg-white border-none outline-none text-lg"></div>
         <div style="max-height: 400px; overflow-y: auto;">
-          <table class="whitelist-table"><thead><tr><th>#</th><th>Wallet Address (masked)</th><th>Submission Time (US/ET)</th></tr></thead>
-            <tbody id="modal-whitelist-tbody"><tr><td colspan="3" class="text-center">Loading legacy data...</td></tr></tbody>
-           </table>
+          <table class="whitelist-table"><thead><tr><th>#</th><th>Wallet Address (masked)</th><th>Submission Time (US/ET)</th><th>Referral</th></tr></thead>
+            <tbody id="modal-whitelist-tbody"><tr><td colspan="4" class="text-center">Loading data...</td></tr></tbody>
+          </table>
         </div>
         <div class="close-modal-btn"><button class="win95-btn" onclick="closeAddressModal()">Close</button></div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Legacy Leaderboard (OLD DB) -->
+  <!-- MODAL: Leaderboard -->
   <div id="leaderboardModal" class="modal">
     <div class="modal-window win95-border">
-      <div class="title-bar"><span>🏆 Legacy Referral Leaderboard (Original DB)</span><div class="title-bar-btn" onclick="closeLeaderboardModal()">×</div></div>
-      <div class="modal-content"><div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;"><div class="text-center p-4">Loading legacy leaderboard...</div></div>
+      <div class="title-bar"><span>🏆 Referral Leaderboard (Top 25)</span><div class="title-bar-btn" onclick="closeLeaderboardModal()">×</div></div>
+      <div class="modal-content"><div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;"><div class="text-center p-4">Loading leaderboard...</div></div>
         <div class="close-modal-btn mt-2"><button class="win95-btn" onclick="closeLeaderboardModal()">Close</button></div>
       </div>
     </div>
   </div>
 
   <script>
-    // ===================== FIREBASE CONFIGURATIONS =====================
-    // NEW Firebase (for storing NEW submissions and LIVE counter) -> wldata-4fbbb
-    const NEW_FIREBASE_CONFIG = {
+    // SINGLE FIREBASE DATABASE FOR PERMANENT STORAGE
+    const FIREBASE_CONFIG = {
       apiKey: "AIzaSyAKB5M6aesGShgNco4MMk76Vz4uQMEH4qw",
       authDomain: "wldata-4fbbb.firebaseapp.com",
       databaseURL: "https://wldata-4fbbb-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -337,56 +345,35 @@
       measurementId: "G-55EDGHL641"
     };
     
-    // OLD Firebase (for reading existing whitelist data: addresses & leaderboard) -> punkswl
-    const OLD_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
-      authDomain: "punkswl.firebaseapp.com",
-      databaseURL: "https://punkswl-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "punkswl",
-      storageBucket: "punkswl.firebasestorage.app",
-      appId: "1:810500731524:web:c6c52dd5191a19a67348d1"
-    };
+    let database = null;
+    let dbAvailable = false;
+    let whitelistCount = 0;
+    let whitelistData = [];
+    const MAX_SLOTS = 10000;  // 10,000 max submissions, then form closes permanently
     
-    let newDatabase = null;      // for NEW submissions & LIVE counter
-    let oldDatabase = null;      // for legacy data display only
-    let newDbAvailable = false;
-    let oldDbAvailable = false;
-    
-    let newWhitelistCount = 0;   // counter for NEW submissions only (starts from 0)
-    let legacyWhitelistData = []; // for modals
-    
-    const MAX_SLOTS = 9900;
     const liveCounterSpan = document.getElementById('live-counter');
     const submitBtn = document.getElementById('submit-btn');
     const submitStatus = document.getElementById('submit-status');
     const walletInput = document.getElementById('wallet-input');
     const retweetLinkInput = document.getElementById('retweet-link');
     const referralFriendInput = document.getElementById('referral-friend');
+    const formContainer = document.getElementById('form-container');
+    const closedBanner = document.getElementById('closed-banner');
     
     let tasks = { follow: false, like: false, retweet: false };
+    let formClosed = false;
     
-    // Initialize Firebase instances
+    // Initialize Firebase
     try {
-      const newApp = firebase.initializeApp(NEW_FIREBASE_CONFIG, 'newApp');
-      newDatabase = firebase.database(newApp);
-      newDbAvailable = true;
-      console.log("NEW Firebase (wldata-4fbbb) initialized for submissions & live counter.");
+      const app = firebase.initializeApp(FIREBASE_CONFIG);
+      database = firebase.database(app);
+      dbAvailable = true;
+      console.log("Firebase initialized for PERMANENT storage");
     } catch (err) {
-      console.error("New Firebase init error:", err);
-      newDbAvailable = false;
+      console.error("Firebase init error:", err);
+      dbAvailable = false;
     }
     
-    try {
-      const oldApp = firebase.initializeApp(OLD_FIREBASE_CONFIG, 'oldApp');
-      oldDatabase = firebase.database(oldApp);
-      oldDbAvailable = true;
-      console.log("OLD Firebase (punkswl) initialized for legacy read-only.");
-    } catch (err) {
-      console.error("Old Firebase init error:", err);
-      oldDbAvailable = false;
-    }
-    
-    // Helper: format US Eastern Time
     function formatUSTime(isoStringOrTimestamp) {
       let date;
       if (!isoStringOrTimestamp) date = new Date();
@@ -405,29 +392,30 @@
       return address.slice(0, 6) + '...' + address.slice(-4);
     }
     
-    // ========== LIVE COUNTER: Listen to NEW Firebase submissions only ==========
-    function setupNewDatabaseListener() {
-      if (!newDbAvailable || !newDatabase) {
-        console.warn("New DB not available, live counter remains 0");
-        return;
-      }
-      const submissionsRef = newDatabase.ref('whitelist_submissions');
-      submissionsRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        let count = 0;
-        if (data) {
-          count = Object.keys(data).length;
+    // Close form when max slots reached
+    function closeFormPermanently() {
+      if (formClosed) return;
+      formClosed = true;
+      if (formContainer) {
+        formContainer.style.opacity = '0.5';
+        const submitBtnElem = formContainer.querySelector('#submit-btn');
+        if (submitBtnElem) {
+          submitBtnElem.disabled = true;
+          submitBtnElem.style.opacity = '0.5';
+          submitBtnElem.style.cursor = 'not-allowed';
         }
-        newWhitelistCount = count;
-        liveCounterSpan.innerText = newWhitelistCount;
-        console.log(`Live new submissions count: ${newWhitelistCount}`);
-      });
+        const inputs = formContainer.querySelectorAll('input');
+        inputs.forEach(input => input.disabled = true);
+        submitStatus.textContent = '🔒 Whitelist is FULL (10,000 slots claimed). Portal closed.';
+        submitStatus.style.color = '#800000';
+      }
+      if (closedBanner) closedBanner.classList.remove('hidden');
     }
     
-    // ========== LEGACY DATA (OLD DB) for Modals ==========
-    function setupLegacyDatabaseListener() {
-      if (!oldDbAvailable || !oldDatabase) return;
-      const whitelistRef = oldDatabase.ref('whitelist');
+    // LIVE listener for permanent data - NO AUTO-DELETE
+    function setupLiveListener() {
+      if (!dbAvailable || !database) return;
+      const whitelistRef = database.ref('whitelist_submissions');
       whitelistRef.on('value', (snapshot) => {
         const data = snapshot.val();
         const newList = [];
@@ -437,22 +425,30 @@
             newList.push({
               id: key,
               wallet_address: item.wallet_address || "",
-              twitter_handle: item.twitter_handle || "",
+              retweet_link: item.retweet_link || "",
               referral_friend: item.referral_friend || "",
               claimed_at: item.claimed_at || null,
               timestamp: item.timestamp || Date.now()
             });
           });
         }
+        // Sort by timestamp ascending (oldest first)
         newList.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
-        legacyWhitelistData = newList;
+        whitelistData = newList;
+        whitelistCount = whitelistData.length;
+        liveCounterSpan.innerText = whitelistCount;
+        
+        // Check if max slots reached (10,000)
+        if (whitelistCount >= MAX_SLOTS) {
+          closeFormPermanently();
+        }
+        
         // Refresh modals if open
         if (document.getElementById('addressModal').style.display === 'flex') renderAddressModal();
         if (document.getElementById('leaderboardModal').style.display === 'flex') renderLeaderboardModal();
       });
     }
     
-    // ========== TASK VERIFICATION ==========
     function completeTaskUI(task) {
       if (tasks[task]) return;
       tasks[task] = true;
@@ -462,6 +458,7 @@
     }
     
     function checkAllTasks() {
+      if (formClosed) return;
       const allDone = tasks.follow && tasks.like && tasks.retweet;
       const hasWallet = walletInput.value.trim().startsWith('0x') && walletInput.value.trim().length >= 10;
       const hasRetweetLink = retweetLinkInput.value.trim().length > 5 && (retweetLinkInput.value.trim().includes('x.com') || retweetLinkInput.value.trim().includes('twitter.com'));
@@ -495,7 +492,6 @@
       btnElement.disabled = true;
       btnElement.textContent = 'Verifying...';
       await new Promise(resolve => setTimeout(resolve, 2000));
-      // Simulate success (90% success rate)
       if (Math.random() > 0.1) {
         completeTaskUI(task);
         btnElement.textContent = '✓ Verified';
@@ -514,12 +510,12 @@
       }
     };
     
-    // ========== SUBMIT to NEW Firebase Database ==========
-    async function submitToNewFirebase(wallet, retweetLink, referral) {
-      if (!newDbAvailable || !newDatabase) {
-        throw new Error("New Firebase Database is not available.");
+    // PERMANENT SUBMIT - data stays, never auto-deleted
+    async function submitToFirebase(wallet, retweetLink, referral) {
+      if (!dbAvailable || !database) {
+        throw new Error("Firebase Database not available.");
       }
-      const newEntryRef = newDatabase.ref('whitelist_submissions').push();
+      const newEntryRef = database.ref('whitelist_submissions').push();
       const submissionData = {
         wallet_address: wallet,
         retweet_link: retweetLink,
@@ -527,26 +523,29 @@
         claimed_at: new Date().toISOString(),
         timestamp: Date.now(),
         status: "whitelisted",
-        source: "portal_2026"
+        source: "portal"
       };
       await newEntryRef.set(submissionData);
       return newEntryRef.key;
     }
     
-    // Check for duplicate wallet in NEW DB only (since live counter is new DB)
-    async function isWalletAlreadyInNewDb(wallet) {
-      if (!newDbAvailable) return false;
-      const snapshot = await newDatabase.ref('whitelist_submissions').orderByChild('wallet_address').equalTo(wallet).once('value');
+    async function isWalletAlreadyExists(wallet) {
+      if (!dbAvailable) return false;
+      const snapshot = await database.ref('whitelist_submissions').orderByChild('wallet_address').equalTo(wallet).once('value');
       return snapshot.exists();
     }
     
-    // Main submit handler (ENABLED)
     window.submitWhitelist = async function() {
+      if (formClosed) {
+        submitStatus.textContent = '❌ Whitelist is already full (10,000 slots claimed).';
+        submitStatus.style.color = 'red';
+        return false;
+      }
+      
       const wallet = walletInput.value.trim();
       const retweetLink = retweetLinkInput.value.trim();
       const referral = referralFriendInput.value.trim();
       
-      // Validation
       if (!tasks.follow || !tasks.like || !tasks.retweet) {
         submitStatus.textContent = '❌ Please complete all three tasks first.';
         submitStatus.style.color = 'red';
@@ -563,31 +562,36 @@
         return false;
       }
       
-      // Duplicate check in NEW DB only (legacy DB is separate)
-      const alreadyExists = await isWalletAlreadyInNewDb(wallet);
+      // Check if already whitelisted
+      const alreadyExists = await isWalletAlreadyExists(wallet);
       if (alreadyExists) {
-        submitStatus.textContent = '⚠️ This wallet has already been whitelisted in the new system!';
+        submitStatus.textContent = '⚠️ This wallet has already been whitelisted!';
         submitStatus.style.color = 'red';
         return false;
       }
       
-      // Show loading state
+      // Check if max slots reached before submission
+      if (whitelistCount >= MAX_SLOTS) {
+        closeFormPermanently();
+        submitStatus.textContent = '❌ Whitelist is full (10,000 slots). Cannot submit.';
+        submitStatus.style.color = 'red';
+        return false;
+      }
+      
       const originalText = submitBtn.innerText;
       submitBtn.innerText = 'Submitting...';
       submitBtn.disabled = true;
       
       try {
-        await submitToNewFirebase(wallet, retweetLink, referral);
-        submitStatus.textContent = '🎉 SUCCESS! You are now whitelisted. Thank you!';
+        await submitToFirebase(wallet, retweetLink, referral);
+        submitStatus.textContent = '🎉 SUCCESS! You are now whitelisted permanently. Thank you!';
         submitStatus.style.color = '#006400';
-        // Clear form fields after successful submission
         walletInput.value = '';
         retweetLinkInput.value = '';
         referralFriendInput.value = '';
         submitBtn.innerText = 'Claimed ✓';
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.6';
-        // Keep tasks completed but optionally we leave them checked as user already did tasks.
       } catch (err) {
         console.error(err);
         submitStatus.textContent = '❌ Submission error. Please refresh and try again.';
@@ -598,20 +602,21 @@
       }
     };
     
-    // ========== MODALS using LEGACY Firebase data (OLD DB) ==========
+    // MODAL rendering from permanent data
     function renderAddressModal() {
       const tbody = document.getElementById('modal-whitelist-tbody');
       if (!tbody) return;
-      let filtered = [...legacyWhitelistData];
+      let filtered = [...whitelistData];
       const searchVal = document.getElementById('modal-search')?.value.trim().toLowerCase() || '';
       if (searchVal) filtered = filtered.filter(e => e.wallet_address && e.wallet_address.toLowerCase().includes(searchVal));
-      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="text-center">No legacy entries found.</td></tr>'; return; }
+      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="text-center">No entries found.</td></tr>'; return; }
       let html = '';
       filtered.forEach((entry, idx) => {
-        const globalRank = legacyWhitelistData.findIndex(e => e.id === entry.id) + 1;
+        const globalRank = whitelistData.findIndex(e => e.id === entry.id) + 1;
         const masked = maskAddress(entry.wallet_address);
         const timeStr = entry.claimed_at ? formatUSTime(entry.claimed_at) : (entry.timestamp ? formatUSTime(entry.timestamp) : 'Unknown');
-        html += `<tr><td>${globalRank}</td><td title="${entry.wallet_address}">${masked}</td><td>${timeStr}</td></tr>`;
+        const referralDisplay = entry.referral_friend ? entry.referral_friend.substring(0, 20) : '—';
+        html += `<tr><td>${globalRank}</td><td title="${entry.wallet_address}">${masked}</td><td>${timeStr}</td><td>${referralDisplay}</td></tr>`;
       });
       tbody.innerHTML = html;
     }
@@ -620,7 +625,7 @@
       const container = document.getElementById('leaderboard-list');
       if (!container) return;
       const referralCountMap = new Map();
-      legacyWhitelistData.forEach(entry => {
+      whitelistData.forEach(entry => {
         let ref = entry.referral_friend;
         if (ref && typeof ref === 'string' && ref.trim() !== "") {
           let normalized = ref.trim().toLowerCase();
@@ -632,7 +637,7 @@
         }
       });
       let arr = Array.from(referralCountMap.values()).sort((a,b) => b.count - a.count).slice(0,25);
-      if (arr.length === 0) { container.innerHTML = '<div class="text-center p-4">No referral data in legacy DB.</div>'; return; }
+      if (arr.length === 0) { container.innerHTML = '<div class="text-center p-4">No referrals yet. Be the first!</div>'; return; }
       let html = '';
       arr.forEach((item, idx) => {
         html += `<div class="leaderboard-item"><span><strong>${idx+1}.</strong> ${item.displayName}</span><span class="bg-black text-green-400 px-2 py-0.5 font-mono text-xl">${item.count}</span></div>`;
@@ -658,7 +663,6 @@
     };
     window.closeLeaderboardModal = function() { document.getElementById('leaderboardModal').style.display = 'none'; };
     
-    // ========== CLOCK ==========
     function updateUSTime() {
       const now = new Date();
       const formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
@@ -667,7 +671,6 @@
     }
     setInterval(updateUSTime, 1000);
     
-    // ========== LOADING SIMULATION ==========
     function startLoading() {
       let progress = 0;
       const loadingTexts = ['Loading system files...', 'Connecting to Ethereum...', 'Initializing NFT database...', 'Syncing Live Counter...', 'Verifying blockchain...', 'Portal ready!'];
@@ -682,16 +685,13 @@
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('main-portal').classList.remove('hidden');
             updateUSTime();
-            // Initialize listeners
-            if (newDbAvailable) setupNewDatabaseListener();
-            if (oldDbAvailable) setupLegacyDatabaseListener();
+            if (dbAvailable) setupLiveListener();
             checkAllTasks();
           }, 500);
         }
       }, 280);
     }
     
-    // Attach DOM event listeners
     walletInput.addEventListener('input', checkAllTasks);
     retweetLinkInput.addEventListener('input', checkAllTasks);
     referralFriendInput.addEventListener('input', checkAllTasks);
