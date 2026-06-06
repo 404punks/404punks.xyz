@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 Punks Lab</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap" rel="stylesheet">
   <style>
-        * { font-family: 'Space Mono', monospace; }
-        body { background: #008080; }
+        * { font-family: 'Press Start 2P', monospace; }
         .win-border { border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; }
         .win-border-inset { border: 2px solid; border-color: #808080 #ffffff #ffffff #808080; }
         .title-bar { background: linear-gradient(90deg, #000080, #1084d0); }
@@ -22,8 +21,7 @@
  <body data-template-id="__page-root" class="min-h-screen flex items-center justify-center p-4">
   <main class="w-full max-w-2xl">
    <div class="win-border bg-[#c0c0c0] shadow-lg">
-    <div class="title-bar px-2 py-1 flex items-center justify-between">
-     <span class="text-white text-xs font-bold">404punks.xyz</span>
+    <div class="title-bar px-2 py-1 flex items-center justify-between"><span class="text-white text-[10px] font-bold">404punks.xyz</span>
      <div class="flex gap-1">
       <div class="win-btn">
        _
@@ -38,44 +36,43 @@
     </div>
     <div class="p-4 md:p-6 space-y-5">
      <div class="win-border-inset bg-white p-4 text-center">
-      <h1 data-template-id="main-heading" class="canva-text text-2xl md:text-4xl font-bold tracking-tight"></h1>
-      <p data-template-id="sub-text" class="canva-text mt-2 text-sm md:text-base"></p>
+      <h1 data-template-id="main-heading" class="canva-text text-base md:text-xl font-bold tracking-tight">404 Punks Lab</h1>
+      <p data-template-id="sub-text" class="canva-text mt-2 text-[10px] md:text-xs">404 signal detected. 10k identities loading...</p>
      </div>
-     <div class="text-center">
-      <a href="https://x.com/404punklab" target="_blank" rel="noopener noreferrer"> <button data-template-id="follow-btn" class="canva-button win-border px-6 py-2 bg-[#c0c0c0] font-bold text-sm cursor-pointer active:border-color-[#808080_#fff_#fff_#808080]"></button> </a>
+     <div class="text-center"><a href="https://x.com/404punklab" target="_blank" rel="noopener noreferrer"> <button data-template-id="follow-btn" class="canva-button win-border px-4 py-2 bg-[#c0c0c0] text-[10px] cursor-pointer">Follow @404punklab on X</button> </a>
      </div>
      <div class="win-border-inset bg-[#000080] p-4">
-      <p data-template-id="portal-label" class="canva-text text-center text-white text-xs md:text-sm mb-3 uppercase tracking-widest"></p>
+      <p data-template-id="portal-label" class="canva-text text-center text-[10px] md:text-xs mb-3 uppercase tracking-widest">Punks Portal Opens — June 10, 2026</p>
       <div id="countdown" class="flex justify-center gap-2 md:gap-4 flex-wrap">
        <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
-        <div id="days" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+        <div id="days" class="text-[#00ff00] text-2xl md:text-4xl font-bold">
          --
         </div>
-        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+        <div class="text-[#00ff00] text-[8px] uppercase mt-1">
          Days
         </div>
        </div>
        <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
-        <div id="hours" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+        <div id="hours" class="text-[#00ff00] text-2xl md:text-4xl font-bold">
          --
         </div>
-        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+        <div class="text-[#00ff00] text-[8px] uppercase mt-1">
          Hours
         </div>
        </div>
        <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
-        <div id="mins" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+        <div id="mins" class="text-[#00ff00] text-2xl md:text-4xl font-bold">
          --
         </div>
-        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+        <div class="text-[#00ff00] text-[8px] uppercase mt-1">
          Mins
         </div>
        </div>
        <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
-        <div id="secs" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+        <div id="secs" class="text-[#00ff00] text-2xl md:text-4xl font-bold">
          --
         </div>
-        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+        <div class="text-[#00ff00] text-[8px] uppercase mt-1">
          Secs
         </div>
        </div>
@@ -98,5 +95,5 @@
         update();
         setInterval(update, 1000);
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a079cd371ffd1eed',t:'MTc4MDc3MzkxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a079d73b7c493187',t:'MTc4MDc3NDMyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
