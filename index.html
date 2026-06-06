@@ -1,652 +1,102 @@
-<!DOCTYPE html>
-<html class="h-full">
-<head>
+<!doctype html>
+<html lang="en">
+ <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 Punks Labs - Whitelist Portal</title>
+  <title>404 Punks Lab</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'VT323', monospace; }
-    .press-start { font-family: 'Press Start 2P', cursive; }
-    
-    .win95-border {
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-    }
-    .win95-inset {
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-      background: #fff;
-    }
-    .win95-btn {
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-      padding: 4px 12px;
-      cursor: pointer;
-      font-family: 'VT323', monospace;
-      font-size: 16px;
-      transition: all 0.05s linear;
-    }
-    .win95-btn:active {
-      border-color: #808080 #ffffff #ffffff #808080;
-    }
-    .title-bar {
-      background: linear-gradient(90deg, #000080, #1084d0);
-      color: white;
-      padding: 3px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: move;
-    }
-    .title-bar-btn {
-      width: 16px; height: 14px;
-      border: 1px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; cursor: pointer;
-    }
-    .title-bar-btn:active {
-      border-color: #808080 #ffffff #ffffff #808080;
-    }
-
-    .loading-bar-outer {
-      width: 300px; height: 22px;
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-      background: #ffffff;
-      padding: 2px;
-    }
-    .loading-bar-inner {
-      height: 100%;
-      background: #000080;
-      width: 0%;
-      transition: width 0.08s linear;
-    }
-
-    .scanlines::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.03) 2px,
-        rgba(0,0,0,0.03) 4px
-      );
-      pointer-events: none;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    .blink { animation: blink 1s infinite; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in { animation: fadeIn 0.3s ease-out; }
-    .task-check {
-      width: 18px; height: 18px;
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-      background: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-    .task-check.checked { background: #000080; color: white; }
-    .live-dot {
-      width: 10px; height: 10px;
-      background: #00ff00;
-      border-radius: 50%;
-      animation: blink 1.2s infinite;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-window {
-      width: 700px;
-      max-width: 90%;
-      max-height: 80%;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal-content {
-      overflow-y: auto;
-      padding: 12px;
-      background: #c0c0c0;
-    }
-    .whitelist-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .whitelist-table th, .whitelist-table td {
-      border: 1px solid #808080;
-      padding: 5px 8px;
-      text-align: left;
-      background: #fff;
-    }
-    .whitelist-table th {
-      background: #c0c0c0;
-    }
-    .leaderboard-item {
-      background: #e0e0e0;
-      margin-bottom: 4px;
-      padding: 8px 12px;
-      border-left: 4px solid #000080;
-      display: flex;
-      justify-content: space-between;
-      font-size: 18px;
-    }
-    .close-modal-btn {
-      margin-top: 8px;
-      text-align: right;
-    }
-    .closed-badge {
-      background: #800000;
-      color: white;
-      padding: 2px 8px;
-      border-radius: 2px;
-      font-weight: bold;
-    }
-    .notification-bell {
-      background: #ff0000;
-      color: white;
-      border-radius: 50%;
-      width: 8px;
-      height: 8px;
-      display: inline-block;
-      margin-left: 5px;
-      animation: blink 1s infinite;
-    }
-  </style>
-</head>
-<body class="h-full overflow-auto" style="background: #008080;">
-
-  <!-- LOADING SCREEN -->
-  <div id="loading-screen" class="h-full flex items-center justify-center scanlines relative" style="background: #008080;">
-    <div class="win95-border p-0" style="width: 440px; max-width: 90%;">
-      <div class="title-bar">
-        <span style="font-size: 13px;">404 Punks Labs - Loading...</span>
-        <div class="title-bar-btn">×</div>
+        * { font-family: 'Space Mono', monospace; }
+        body { background: #008080; }
+        .win-border { border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; }
+        .win-border-inset { border: 2px solid; border-color: #808080 #ffffff #ffffff #808080; }
+        .title-bar { background: linear-gradient(90deg, #000080, #1084d0); }
+        .win-btn { width: 16px; height: 14px; background: #c0c0c0; border: 1px solid; border-color: #ffffff #000 #000 #ffffff; font-size: 9px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .countdown-box { background: #000; border: 3px solid; border-color: #808080 #ffffff #ffffff #808080; }
+    </style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
+ <script src="/_sdk/telemetry_sdk.js"></script></head>
+ <body data-template-id="__page-root" class="min-h-screen flex items-center justify-center p-4">
+  <main class="w-full max-w-2xl">
+   <div class="win-border bg-[#c0c0c0] shadow-lg">
+    <div class="title-bar px-2 py-1 flex items-center justify-between">
+     <span class="text-white text-xs font-bold">404punkslab.exe</span>
+     <div class="flex gap-1">
+      <div class="win-btn">
+       _
       </div>
-      <div class="p-6 flex flex-col items-center gap-4">
-        <div class="text-4xl pixel-skull">
-          <img src="https://raw.githubusercontent.com/robosym/roborym.github.io/main/gif/1.gif" 
-               alt="loading skull" style="width: 80px; height: 80px; image-rendering: crisp-edges;">
-        </div>
-        <p class="press-start text-xs text-center" style="color: #000080;">404 PUNKS LABS</p>
-        <p class="text-lg">Initializing Whitelist Portal...</p>
-        <div class="loading-bar-outer">
-          <div class="loading-bar-inner" id="loading-bar"></div>
-        </div>
-        <p class="text-sm" id="loading-text">Loading system files...</p>
+      <div class="win-btn">
+       □
       </div>
+      <div class="win-btn">
+       ×
+      </div>
+     </div>
     </div>
-  </div>
-
-  <!-- MAIN PORTAL -->
-  <div id="main-portal" class="h-full overflow-auto hidden" style="background: #008080;">
-    <div class="p-4 max-w-4xl mx-auto w-full">
-      
-      <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar">
-          <span style="font-size: 13px;">🖥️ 404 Punks Labs - Whitelist Portal [CLOSED]</span>
-          <div class="flex gap-1">
-            <div class="title-bar-btn">_</div>
-            <div class="title-bar-btn">□</div>
-            <div class="title-bar-btn">×</div>
-          </div>
+    <div class="p-4 md:p-6 space-y-5">
+     <div class="win-border-inset bg-white p-4 text-center">
+      <h1 data-template-id="main-heading" class="canva-text text-2xl md:text-4xl font-bold tracking-tight"></h1>
+      <p data-template-id="sub-text" class="canva-text mt-2 text-sm md:text-base"></p>
+     </div>
+     <div class="text-center">
+      <a href="https://x.com/404punklab" target="_blank" rel="noopener noreferrer"> <button data-template-id="follow-btn" class="canva-button win-border px-6 py-2 bg-[#c0c0c0] font-bold text-sm cursor-pointer active:border-color-[#808080_#fff_#fff_#808080]"></button> </a>
+     </div>
+     <div class="win-border-inset bg-[#000080] p-4">
+      <p data-template-id="portal-label" class="canva-text text-center text-white text-xs md:text-sm mb-3 uppercase tracking-widest"></p>
+      <div id="countdown" class="flex justify-center gap-2 md:gap-4 flex-wrap">
+       <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
+        <div id="days" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+         --
         </div>
-        <div class="p-4 text-center">
-          <h1 class="press-start text-sm md:text-base mb-2" style="color: #800000;">🔒 WHITELIST PORTAL CLOSED</h1>
-          <p class="text-xl">10,000 Original NFTs on Ethereum Blockchain</p>
-          <p class="text-sm mt-2" style="color: #800000;">⚠️ Whitelist submissions are no longer accepted</p>
+        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+         Days
         </div>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">Supply</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: #000080;">10,000</p><p class="text-sm">Total NFTs</p></div></div>
-        <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">WL Slots</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: #000080;">9,900</p><p class="text-sm">Available</p></div></div>
-        <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">WL Price</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: #000080;">0.0011</p><p class="text-sm">ETH</p></div></div>
-        <div class="win95-border p-0 fade-in"><div class="title-bar"><span style="font-size: 11px;">GDT Mint</span></div><div class="p-3 text-center"><p class="text-2xl font-bold" style="color: green;">FREE</p><p class="text-sm">0 ETH</p></div></div>
-      </div>
-
-      <!-- LIVE Counter - Read Only from Firebase -->
-      <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 11px;">📡 TOTAL WHITELISTED WALLETS</span><div class="live-dot"></div></div>
-        <div class="p-4 flex items-center justify-center gap-4 flex-wrap">
-          <div class="win95-inset px-6 py-3 bg-black"><span class="text-3xl" style="color: #00ff00;" id="live-counter">0</span> <span class="text-lg" style="color: #00ff00;"> / 9,900</span></div>
-          <p class="text-lg">Total Whitelisted Addresses</p>
+       </div>
+       <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
+        <div id="hours" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+         --
         </div>
-      </div>
-
-      <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📅 Mint Date</span></div>
-        <div class="p-3 text-center">
-          <p class="text-2xl" style="color: #800000;">June 8, 2026 (ET)</p>
-          <p class="text-sm">Blockchain: Ethereum (ETH)</p>
+        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+         Hours
         </div>
-      </div>
-
-      <!-- SOCIAL TASKS - Updated to X.com -->
-      <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📋 X (Twitter) Tasks - Required for Whitelist</span></div>
-        <div class="p-4 space-y-3">
-          <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-follow">
-            <div class="task-check" id="check-follow"></div>
-            <span class="text-lg flex-1">Follow <strong>@404punklab</strong> on X (Twitter) <span class="notification-bell"></span></span>
-            <a href="https://x.com/404punklab" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('follow', this)">Follow on X ↗</button></a>
-          </div>
-          <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-like">
-            <div class="task-check" id="check-like"></div>
-            <span class="text-lg flex-1">Like the pinned announcement post on X</span>
-            <a href="https://x.com/i/status/2061744339668328730" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('like', this)">Like Post ↗</button></a>
-          </div>
-          <div class="flex items-center gap-3 p-2 win95-inset flex-wrap" id="task-retweet">
-            <div class="task-check" id="check-retweet"></div>
-            <span class="text-lg flex-1">Retweet & Tag 3 Friends on X</span>
-            <a href="https://x.com/i/status/2061721046970232998" target="_blank"><button class="win95-btn text-sm" onclick="verifyTask('retweet', this)">Retweet ↗</button></a>
-          </div>
+       </div>
+       <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
+        <div id="mins" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+         --
         </div>
-        <div class="px-4 pb-3 text-xs text-center text-gray-700">
-          💡 <strong>Enable Notifications</strong> - Follow @404punklab and turn on notifications to stay updated!
+        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+         Mins
         </div>
-      </div>
-
-      <!-- SUBMIT FORM - DISABLED (Portal Closed) -->
-      <div class="win95-border p-0 mb-4 fade-in" id="form-container" style="opacity: 0.6;">
-        <div class="title-bar"><span style="font-size: 13px;">🔒 WHITELIST SUBMISSION - CLOSED</span></div>
-        <div class="p-4">
-          <div class="win95-inset p-1 mb-3">
-            <input type="text" id="wallet-input" placeholder="0x... Enter your ETH wallet address" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
-          </div>
-          <div class="win95-inset p-1 mb-3">
-            <input type="text" id="retweet-link" placeholder="https://x.com/yourpost/status/... (Retweet Link)" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
-            <p class="text-xs mt-1 text-gray-600">*Portal closed - no new submissions accepted</p>
-          </div>
-          <div class="win95-inset p-1 mb-3">
-            <input type="text" id="referral-friend" placeholder="Referral: @friendTwitterHandle (optional)" class="w-full p-2 text-lg bg-gray-200 border-none outline-none" disabled style="background:#e0e0e0; cursor:not-allowed;">
-          </div>
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-sm" id="submit-status" style="color: #800000;">🔒 WHITELIST PORTAL IS CLOSED - No more submissions accepted</p>
-            <button class="win95-btn text-lg" id="submit-btn" disabled style="opacity:0.5; cursor:not-allowed;">🔒 Closed</button>
-          </div>
+       </div>
+       <div class="countdown-box px-3 py-2 md:px-5 md:py-4 text-center min-w-[70px]">
+        <div id="secs" class="text-[#00ff00] text-3xl md:text-5xl font-bold">
+         --
         </div>
-      </div>
-
-      <!-- Admin Buttons: View Addresses & Leaderboard -->
-      <div class="win95-border p-0 mb-4 fade-in">
-        <div class="title-bar"><span style="font-size: 13px;">📊 Whitelist Data Viewer</span></div>
-        <div class="p-4 flex flex-wrap gap-4 justify-center">
-          <button class="win95-btn text-lg px-6" onclick="openAddressModal()">📋 View Whitelist Addresses</button>
-          <button class="win95-btn text-lg px-6" onclick="openLeaderboardModal()">🏆 Referral Leaderboard</button>
+        <div class="text-[#00ff00] text-[10px] uppercase mt-1">
+         Secs
         </div>
-        <div class="px-4 pb-3 text-xs text-center text-gray-700">*View all whitelisted addresses (masked) and referral rankings</div>
+       </div>
       </div>
-
-      <div class="win95-border p-2 flex items-center justify-between fade-in flex-wrap gap-2">
-        <div class="flex items-center gap-2"><button class="win95-btn text-sm">🖥️ Start</button> <span class="text-sm text-gray-700">|</span> <span class="text-sm">404 Punks Labs © 2026</span></div>
-        <div class="win95-inset px-3 py-1 text-sm font-mono" id="clock-display">00:00:00</div>
-      </div>
+     </div>
     </div>
-  </div>
-
-  <!-- MODAL: Whitelist Address Viewer -->
-  <div id="addressModal" class="modal">
-    <div class="modal-window win95-border">
-      <div class="title-bar"><span>📋 Whitelist Participants (Addresses)</span><div class="title-bar-btn" onclick="closeAddressModal()">×</div></div>
-      <div class="modal-content">
-        <div class="win95-inset p-1 mb-2">
-          <input type="text" id="modal-search" placeholder="🔍 Search by wallet address" class="w-full p-2 bg-white border-none outline-none text-lg">
-        </div>
-        <div style="max-height: 400px; overflow-y: auto;">
-          <table class="whitelist-table w-full">
-            <thead>
-              <tr><th>#</th><th>Wallet Address (masked)</th><th>Submission Time (US/ET)</th><th>Referral</th></tr>
-            </thead>
-            <tbody id="modal-whitelist-tbody">
-              <tr><td colspan="4" class="text-center">Loading whitelist data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="close-modal-btn">
-          <button class="win95-btn" onclick="closeAddressModal()">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Leaderboard -->
-  <div id="leaderboardModal" class="modal">
-    <div class="modal-window win95-border">
-      <div class="title-bar"><span>🏆 Referral Leaderboard (Top 25)</span><div class="title-bar-btn" onclick="closeLeaderboardModal()">×</div></div>
-      <div class="modal-content">
-        <div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;">
-          <div class="text-center p-4">Loading leaderboard...</div>
-        </div>
-        <div class="close-modal-btn mt-2">
-          <button class="win95-btn" onclick="closeLeaderboardModal()">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+   </div>
+  </main>
+  <script src="/_sdk/editing_sdk.js"></script>
   <script>
-    // Firebase Configuration (Original punkswl database)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAnCxyqbCaX_T9Y01lfypvq0HJVtSY8qR0",
-      authDomain: "punkswl.firebaseapp.com",
-      databaseURL: "https://punkswl-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "punkswl",
-      storageBucket: "punkswl.firebasestorage.app",
-      messagingSenderId: "810500731524",
-      appId: "1:810500731524:web:c6c52dd5191a19a67348d1",
-      measurementId: "G-7SXN0TR713"
-    };
-
-    // Initialize Firebase
-    let database = null;
-    let allEntries = [];
-    let whitelistCount = 0;
-    
-    try {
-      firebase.initializeApp(firebaseConfig);
-      database = firebase.database();
-      console.log("✅ Firebase connected to punkswl database");
-    } catch(err) {
-      console.error("Firebase init error:", err);
-    }
-    
-    // Helper Functions
-    function formatUSTime(timestamp) {
-      if (!timestamp) return 'Unknown';
-      let date = new Date(timestamp);
-      return new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: true
-      }).format(date);
-    }
-    
-    function maskAddress(address) {
-      if (!address || address.length < 12) return address;
-      return address.slice(0, 6) + '...' + address.slice(-4);
-    }
-    
-    // Load data from Firebase (READ ONLY - punkswl database)
-    function loadWhitelistData() {
-      if (!database) {
-        console.error("Database not available");
-        document.getElementById('modal-whitelist-tbody').innerHTML = '<tr><td colspan="4" class="text-center">❌ Database connection failed</td></tr>';
-        return;
-      }
-      
-      const whitelistRef = database.ref('whitelist');
-      whitelistRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        const newList = [];
-        
-        if (data) {
-          Object.keys(data).forEach(key => {
-            const item = data[key];
-            newList.push({
-              id: key,
-              wallet_address: item.wallet_address || '',
-              twitter_handle: item.twitter_handle || '',
-              referral_friend: item.referral_friend || '',
-              claimed_at: item.claimed_at || null,
-              timestamp: item.timestamp || Date.now()
-            });
-          });
+        const target = new Date('2026-06-10T15:00:00Z').getTime();
+        function update() {
+            const diff = Math.max(0, target - Date.now());
+            const s = Math.floor(diff / 1000);
+            document.getElementById('days').textContent = String(Math.floor(s / 86400)).padStart(2, '0');
+            document.getElementById('hours').textContent = String(Math.floor((s % 86400) / 3600)).padStart(2, '0');
+            document.getElementById('mins').textContent = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+            document.getElementById('secs').textContent = String(s % 60).padStart(2, '0');
         }
-        
-        // Sort by timestamp (oldest first)
-        newList.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        allEntries = newList;
-        whitelistCount = allEntries.length;
-        
-        // Update live counter
-        const liveCounter = document.getElementById('live-counter');
-        if (liveCounter) liveCounter.innerText = whitelistCount;
-        
-        console.log(`📊 Loaded ${whitelistCount} whitelist entries from punkswl database`);
-        
-        // Refresh modals if open
-        if (document.getElementById('addressModal') && document.getElementById('addressModal').style.display === 'flex') {
-          renderAddressModal();
-        }
-        if (document.getElementById('leaderboardModal') && document.getElementById('leaderboardModal').style.display === 'flex') {
-          renderLeaderboardModal();
-        }
-      }, (error) => {
-        console.error("Firebase read error:", error);
-        document.getElementById('modal-whitelist-tbody').innerHTML = '<tr><td colspan="4" class="text-center">❌ Error loading data</td></tr>';
-      });
-    }
-    
-    // Render Address Modal (with search and masked addresses)
-    function renderAddressModal() {
-      const tbody = document.getElementById('modal-whitelist-tbody');
-      if (!tbody) return;
-      
-      let filtered = [...allEntries];
-      const searchTerm = document.getElementById('modal-search')?.value.trim().toLowerCase() || '';
-      
-      if (searchTerm) {
-        filtered = filtered.filter(entry => 
-          entry.wallet_address && entry.wallet_address.toLowerCase().includes(searchTerm)
-        );
-      }
-      
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No whitelist entries found</td></tr>';
-        return;
-      }
-      
-      let html = '';
-      filtered.forEach((entry, idx) => {
-        const rank = idx + 1;
-        const maskedWallet = maskAddress(entry.wallet_address);
-        const timeStr = entry.claimed_at ? formatUSTime(entry.claimed_at) : formatUSTime(entry.timestamp);
-        const referralDisplay = entry.referral_friend ? entry.referral_friend.substring(0, 25) : '—';
-        
-        html += `<tr>
-          <td>${rank}</td>
-          <td title="${entry.wallet_address}">${maskedWallet}</td>
-          <td>${timeStr}</td>
-          <td>${referralDisplay}</td>
-        </tr>`;
-      });
-      
-      tbody.innerHTML = html;
-    }
-    
-    // Render Leaderboard Modal (based on referral counts)
-    function renderLeaderboardModal() {
-      const container = document.getElementById('leaderboard-list');
-      if (!container) return;
-      
-      const referralMap = new Map();
-      
-      allEntries.forEach(entry => {
-        let ref = entry.referral_friend;
-        if (ref && typeof ref === 'string' && ref.trim() !== "") {
-          let normalized = ref.trim().toLowerCase();
-          let displayName = ref.trim();
-          if (!normalized.startsWith('@')) {
-            normalized = '@' + normalized;
-            displayName = '@' + displayName;
-          } else {
-            displayName = normalized;
-          }
-          
-          if (referralMap.has(normalized)) {
-            referralMap.get(normalized).count++;
-          } else {
-            referralMap.set(normalized, { displayName, count: 1 });
-          }
-        }
-      });
-      
-      const sorted = Array.from(referralMap.values())
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 25);
-      
-      if (sorted.length === 0) {
-        container.innerHTML = '<div class="text-center p-4">No referral submissions yet.</div>';
-        return;
-      }
-      
-      let html = '';
-      sorted.forEach((item, idx) => {
-        html += `<div class="leaderboard-item">
-          <span><strong>${idx + 1}.</strong> ${item.displayName}</span>
-          <span class="bg-black text-green-400 px-2 py-0.5 font-mono text-xl">${item.count}</span>
-        </div>`;
-      });
-      
-      container.innerHTML = html;
-    }
-    
-    // Task verification (for visual feedback only - portal is closed)
-    let tasks = { follow: false, like: false, retweet: false };
-    
-    function completeTaskUI(task) {
-      if (tasks[task]) return;
-      tasks[task] = true;
-      const checkDiv = document.getElementById('check-' + task);
-      if (checkDiv) {
-        checkDiv.classList.add('checked');
-        checkDiv.innerHTML = '✓';
-      }
-    }
-    
-    window.verifyTask = async function(task, btnElement) {
-      if (tasks[task]) return;
-      btnElement.disabled = true;
-      btnElement.textContent = 'Verifying...';
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      completeTaskUI(task);
-      btnElement.textContent = '✓ Verified';
-      btnElement.style.background = '#008000';
-      btnElement.disabled = true;
-      
-      // Show notification reminder
-      if (task === 'follow') {
-        const statusDiv = document.getElementById('submit-status');
-        if (statusDiv) {
-          statusDiv.innerHTML = '💡 Tip: Enable notifications on X to stay updated about the mint!';
-          statusDiv.style.color = '#000080';
-          setTimeout(() => {
-            statusDiv.innerHTML = '🔒 WHITELIST PORTAL IS CLOSED - No more submissions accepted';
-            statusDiv.style.color = '#800000';
-          }, 3000);
-        }
-      }
-    };
-    
-    // Clock update
-    function updateUSTime() {
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-      });
-      const clockDisplay = document.getElementById('clock-display');
-      if (clockDisplay) clockDisplay.textContent = formatter.format(now);
-    }
-    setInterval(updateUSTime, 1000);
-    
-    // Modal functions
-    window.openAddressModal = function() {
-      const modal = document.getElementById('addressModal');
-      if (modal) {
-        modal.style.display = 'flex';
-        renderAddressModal();
-        
-        const searchInput = document.getElementById('modal-search');
-        if (searchInput) {
-          searchInput.value = '';
-          searchInput.oninput = () => renderAddressModal();
-        }
-      }
-    };
-    
-    window.closeAddressModal = function() {
-      document.getElementById('addressModal').style.display = 'none';
-    };
-    
-    window.openLeaderboardModal = function() {
-      const modal = document.getElementById('leaderboardModal');
-      if (modal) {
-        modal.style.display = 'flex';
-        renderLeaderboardModal();
-      }
-    };
-    
-    window.closeLeaderboardModal = function() {
-      document.getElementById('leaderboardModal').style.display = 'none';
-    };
-    
-    // Loading animation
-    function startLoading() {
-      let progress = 0;
-      const loadingTexts = [
-        'Loading system files...',
-        'Connecting to Firebase...',
-        'Loading whitelist data...',
-        'Indexing wallet addresses...',
-        'Portal ready! (Closed Mode)'
-      ];
-      
-      const interval = setInterval(() => {
-        progress = Math.min(progress + (Math.random() * 12 + 3), 100);
-        document.getElementById('loading-bar').style.width = progress + '%';
-        
-        let idx = Math.min(Math.floor(progress / 20), loadingTexts.length - 1);
-        document.getElementById('loading-text').textContent = loadingTexts[idx];
-        
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('main-portal').classList.remove('hidden');
-            updateUSTime();
-            loadWhitelistData();
-          }, 500);
-        }
-      }, 250);
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      startLoading();
-    });
-  </script>
-</body>
+        update();
+        setInterval(update, 1000);
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a079cd371ffd1eed',t:'MTc4MDc3MzkxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
