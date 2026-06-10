@@ -3,202 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 Punks Lab</title>
+  <title>404 Punks Lab • Identity Registry</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
   <style>
     * { font-family: 'VT323', monospace; }
     .press-start { font-family: 'Press Start 2P', cursive; }
-    
-    .win95-border {
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-    }
-    .win95-inset {
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-      background: #fff;
-    }
+    .win95-border { border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; background: #c0c0c0; }
+    .win95-inset  { border: 2px solid; border-color: #808080 #ffffff #ffffff #808080; background: #fff; }
     .win95-btn {
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-      padding: 6px 14px;
-      cursor: pointer;
-      font-family: 'VT323', monospace;
-      font-size: 18px;
-      font-weight: bold;
+      border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff;
+      background: #c0c0c0; padding: 6px 14px; cursor: pointer;
+      font-family: 'VT323', monospace; font-size: 18px; font-weight: bold;
       transition: all 0.05s linear;
     }
-    .win95-btn:active {
-      border-color: #808080 #ffffff #ffffff #808080;
-    }
+    .win95-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
+    .win95-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .title-bar {
       background: linear-gradient(90deg, #000080, #1084d0);
-      color: white;
-      padding: 4px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      color: white; padding: 4px 8px;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .title-bar-btn {
-      width: 18px; height: 16px;
-      border: 1px solid;
+      width: 18px; height: 16px; border: 1px solid;
       border-color: #ffffff #808080 #808080 #ffffff;
-      background: #c0c0c0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; cursor: pointer;
-      font-weight: bold;
+      background: #c0c0c0; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; cursor: pointer; font-weight: bold; color: #000;
     }
-    .loading-bar-outer {
-      width: 100%; height: 26px;
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-      background: #ffffff;
-      padding: 2px;
-    }
-    .loading-bar-inner {
-      height: 100%;
-      background: #006400;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-    .scanlines::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
-      pointer-events: none;
-    }
+    .loading-bar-outer { width:100%; height:26px; border:2px solid; border-color:#808080 #ffffff #ffffff #808080; background:#ffffff; padding:2px; }
+    .loading-bar-inner { height:100%; background:#006400; width:0%; transition: width 0.5s ease; }
+    .scanlines::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px); pointer-events:none; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
     .blink { animation: blink 1s infinite; }
-    .live-dot {
-      width: 10px; height: 10px;
-      background: #00ff00;
-      border-radius: 50%;
-      animation: blink 1.2s infinite;
-      display: inline-block;
-    }
-    .nft-card {
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .nft-card:hover {
-      transform: scale(1.02);
-      border-color: #000080;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top:0;left:0;right:0;bottom:0;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-window {
-      width: 700px;
-      max-width: 90%;
-      background: #c0c0c0;
-    }
-    .modal-content {
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      max-height: 550px;
-      overflow-y: auto;
-      padding: 12px;
-    }
-    .gallery-card {
-      background: #e0e0e0;
-      border: 2px solid;
-      border-color: #ffffff #808080 #808080 #ffffff;
-      padding: 6px;
-      text-align: center;
-    }
-    .gallery-card img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      image-rendering: crisp-edges;
-      background: #1a1a2e;
-    }
-    .attribute-tag {
-      background: #c0c0c0;
-      border: 1px solid #808080;
-      padding: 3px 10px;
-      font-size: 13px;
-      display: inline-block;
-      margin: 3px;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-    .attribute-tag:hover {
-      background: #000080;
-      color: white;
-      border-color: #ffffff #808080 #808080 #ffffff;
-    }
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #808080;
-      border-top-color: #000080;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .mint-live {
-      animation: mintPulse 1.5s infinite;
-    }
-    @keyframes mintPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 128, 0, 0.7); }
-      50% { box-shadow: 0 0 0 10px rgba(0, 128, 0, 0); }
-    }
-    .my-punks-section {
-      display: none;
-    }
-    .my-punks-section.show {
-      display: block;
-    }
+    .live-dot { width:10px; height:10px; background:#00ff00; border-radius:50%; animation:blink 1.2s infinite; display:inline-block; }
+    .nft-card { transition:all .2s; cursor:pointer; }
+    .nft-card:hover { transform:scale(1.02); border-color:#000080; }
+    .modal { display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,.6); z-index:1000; align-items:center; justify-content:center; }
+    .modal-window { width:700px; max-width:90%; background:#c0c0c0; }
+    .modal-content { max-height:70vh; overflow-y:auto; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; max-height:550px; overflow-y:auto; padding:12px; }
+    .gallery-card { background:#e0e0e0; border:2px solid; border-color:#ffffff #808080 #808080 #ffffff; padding:6px; text-align:center; }
+    .gallery-card img { width:100%; aspect-ratio:1; object-fit:cover; image-rendering:crisp-edges; background:#1a1a2e; }
+    .attribute-tag { background:#c0c0c0; border:1px solid #808080; padding:3px 10px; font-size:13px; display:inline-block; margin:3px; cursor:pointer; transition:all .1s; }
+    .attribute-tag:hover { background:#000080; color:white; border-color:#ffffff #808080 #808080 #ffffff; }
+    .loading-spinner { display:inline-block; width:20px; height:20px; border:2px solid #808080; border-top-color:#000080; border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .mint-live { animation:mintPulse 1.5s infinite; }
+    @keyframes mintPulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,128,0,.7)} 50%{box-shadow:0 0 0 10px rgba(0,128,0,0)} }
+    .my-punks-section { display:none; }
+    .my-punks-section.show { display:block; }
+    .status-panel { background:#000; color:#00ff00; padding:8px 12px; font-size:14px; border:1px inset #808080; min-height:34px; }
+    .node-id { font-size:11px; color:#808080; word-break:break-all; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation:fadeIn .4s ease forwards; }
   </style>
 </head>
-<body class="h-full overflow-auto" style="background: #008080;">
+<body class="h-full overflow-auto" style="background:#008080;">
 
   <!-- LOADING SCREEN -->
-  <div id="loading-screen" class="h-full flex items-center justify-center scanlines relative" style="background: #008080;">
-    <div class="win95-border p-0" style="width: 480px; max-width: 90%;">
+  <div id="loading-screen" class="h-full flex items-center justify-center scanlines relative" style="background:#008080;">
+    <div class="win95-border p-0" style="width:480px;max-width:90%;">
       <div class="title-bar">
-        <span>📡 404 Punks Lab • Real Mint Tracker</span>
+        <span>📡 404 Punks Lab • Identity Registry v3.0</span>
         <div class="title-bar-btn">×</div>
       </div>
       <div class="p-6 flex flex-col items-center gap-4">
-        <img src="https://raw.githubusercontent.com/robosym/roborym.github.io/main/gif/1.gif" alt="skull" style="width: 80px; image-rendering: crisp-edges;">
+        <img src="https://raw.githubusercontent.com/robosym/roborym.github.io/main/gif/1.gif" alt="signal" style="width:80px;image-rendering:crisp-edges;">
         <p class="press-start text-xs text-center text-[#000080]">404 SIGNAL DETECTED</p>
-        <p class="text-xl" id="loading-text">Connecting to Blockchain...</p>
-        <div class="loading-bar-outer">
-          <div class="loading-bar-inner" id="loading-bar"></div>
-        </div>
-        <p class="text-sm text-gray-800" id="loading-detail">Fetching real mint data from contract</p>
+        <p class="text-xl" id="loading-text">Bootstrapping IPFS gateway...</p>
+        <div class="loading-bar-outer"><div class="loading-bar-inner" id="loading-bar"></div></div>
+        <p class="text-sm text-gray-800" id="loading-detail">Resolving on-chain identity registry...</p>
       </div>
     </div>
   </div>
 
   <!-- MAIN PORTAL -->
-  <div id="main-portal" class="h-full overflow-auto hidden" style="background: #008080;">
+  <div id="main-portal" class="h-full overflow-auto hidden" style="background:#008080;">
     <div class="p-4 max-w-7xl mx-auto w-full">
-      
+
+      <!-- Header -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar">
-          <span>🖥️ 404 Punks Lab • Real Mint Tracker</span>
+          <span>🖥️ 404 Punks Lab • Distributed Identity Portal</span>
           <div class="flex gap-1">
             <div class="title-bar-btn">_</div>
             <div class="title-bar-btn">□</div>
@@ -211,29 +98,30 @@
         </div>
       </div>
 
-      <!-- Wallet & Mint Progress - REAL TIME -->
+      <!-- Wallet + Mint Progress -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <div class="win95-border p-0 col-span-2">
-          <div class="title-bar"><span>🔌 WALLET CONNECTION</span></div>
-          <div class="p-3 flex flex-wrap items-center gap-3">
-            <button class="win95-btn text-base" id="connectWalletBtn">🔗 Connect Wallet</button>
-            <div id="walletStatus" class="text-sm win95-inset px-3 py-1">⚡ Not connected</div>
-            <button id="myPunksBtn" class="win95-btn text-base" disabled>👾 My 404 Punks</button>
+          <div class="title-bar"><span>🔌 WALLET AUTHENTICATION</span></div>
+          <div class="p-3 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+              <button class="win95-btn text-base" id="connectWalletBtn">🔗 Connect Wallet</button>
+              <div id="walletStatus" class="text-sm win95-inset px-3 py-1 node-id">◌ Not connected</div>
+              <button id="myPunksBtn" class="win95-btn text-base" disabled>👾 My 404 Punks</button>
+            </div>
+            <div class="status-panel text-sm" id="txStatusLog">// SYSTEM: idle — awaiting wallet connection</div>
           </div>
         </div>
         <div class="win95-border p-0">
-          <div class="title-bar"><span>📊 REAL MINT PROGRESS</span></div>
+          <div class="title-bar"><span>📊 MINT PROGRESS</span></div>
           <div class="p-3">
-            <div class="loading-bar-outer mb-1">
-              <div id="mintProgressFill" class="loading-bar-inner" style="width: 5.2%;"></div>
-            </div>
+            <div class="loading-bar-outer mb-1"><div id="mintProgressFill" class="loading-bar-inner" style="width:5.28%;"></div></div>
             <p class="text-center text-2xl font-bold"><span id="mintedCount">528</span> <span class="text-base">/ 10,000</span></p>
             <p class="text-xs text-center text-green-600 font-bold" id="mintStatus">🟢 LIVE • fetching from contract</p>
           </div>
         </div>
       </div>
 
-      <!-- ROTATING NFT CARD -->
+      <!-- Rotator -->
       <div class="win95-border p-0 mb-4 fade-in">
         <div class="title-bar"><span>🌀 LIVE IDENTITY ROTATOR • 5s interval</span><div class="live-dot"></div></div>
         <div class="p-4 flex flex-col md:flex-row gap-6 items-center justify-center">
@@ -246,43 +134,48 @@
             <p class="text-3xl font-bold" id="nftIdLabel">#0001</p>
             <p class="text-xl" id="nftNameLabel">404 Punks</p>
             <a href="https://opensea.io/collection/404-punks-lab-970357845" target="_blank">
-              <button class="win95-btn text-2xl px-8 py-3 bg-[#006400] text-white mint-live" style="border-color:#ffffff #808080 #808080 #ffffff;">✨ MINT LIVE ✨</button>
+              <button class="win95-btn text-2xl px-8 py-3 bg-[#006400] text-white mint-live"> MINT LIVE </button>
             </a>
             <p class="text-sm text-green-600 font-bold">⬆ LIVE NOW ON OPENSEA ⬆</p>
           </div>
         </div>
       </div>
 
-      <!-- GALLERY - First 500 NFTs -->
+      <!-- Gallery -->
       <div class="win95-border p-0 mb-4">
-        <div class="title-bar"><span>🖼️ NFT GALLERY • First 500 Identities</span></div>
+        <div class="title-bar"><span>🖼️ IDENTITY GALLERY • First 500 Shards</span></div>
         <div class="p-3">
-          <div class="mb-2 text-sm text-gray-700">Showing 500 punks from the collection ↓</div>
-          <div id="galleryGrid500" class="gallery-grid" style="max-height: 600px;"></div>
+          <div class="mb-2 text-sm text-gray-700">Loading 500 identities from IPFS distributed node ↓</div>
+          <div id="galleryGrid500" class="gallery-grid" style="max-height:600px;"></div>
         </div>
       </div>
 
-      <!-- MY PUNKS SECTION (Hidden by default) -->
+      <!-- My Punks -->
       <div id="myPunksContainer" class="win95-border p-0 mb-4 my-punks-section">
-        <div class="title-bar"><span>👾 YOUR 404 PUNKS HOLDINGS</span></div>
+        <div class="title-bar"><span>👾 YOUR BOUND IDENTITIES</span></div>
         <div class="p-3">
-          <div id="myPunksGrid" class="gallery-grid" style="max-height: 400px;"></div>
+          <div id="myPunksMeta" class="text-sm mb-2 text-gray-700"></div>
+          <div id="myPunksGrid" class="gallery-grid" style="max-height:400px;"></div>
         </div>
       </div>
 
-      <!-- FOOTER -->
+      <!-- Footer -->
       <div class="win95-border p-2 flex items-center justify-between flex-wrap gap-2">
-        <div class="flex items-center gap-2"><span class="text-sm">📟 404 Punks Lab © 2026</span><span class="text-sm">|</span><span class="text-sm">Real Mint Tracker</span></div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm">📟 404 Punks Lab © 2026</span>
+          <span class="text-sm">|</span>
+          <span class="text-sm">Distributed Identity Protocol</span>
+        </div>
         <div class="win95-inset px-3 py-1 font-mono text-sm" id="clockDisplay">--:--:--</div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: NFT Metadata -->
+  <!-- MODAL -->
   <div id="metadataModal" class="modal">
     <div class="modal-window win95-border">
-      <div class="title-bar"><span>🔍 NFT DETAILS • 404 Punks</span><div class="title-bar-btn" onclick="closeMetadataModal()">×</div></div>
-      <div class="modal-content p-4" id="metadataContent">loading...</div>
+      <div class="title-bar"><span>🔍 NFT DETAILS • Metadata Decoder</span><div class="title-bar-btn" onclick="closeMetadataModal()">×</div></div>
+      <div class="modal-content p-4" id="metadataContent">Loading metadata...</div>
       <div class="p-2 text-right"><button class="win95-btn" onclick="closeMetadataModal()">Close</button></div>
     </div>
   </div>
@@ -293,265 +186,272 @@
     const IMAGE_CID = "bafybeid4akomqdqr5ugv22gas4gm7cqgxja66omjfuomtbq64v5m7c4fkm";
     const METADATA_GATEWAY = "https://ipfs.io/ipfs";
     const METADATA_CID = "bafybeigu7x7l3pym7elfcnvm7lp2wubepixxkoy74scsbawcui6bfrgbqq";
-    
+
     function getImageUrl(tokenId) { return `${IMAGE_GATEWAY}/${IMAGE_CID}/${tokenId}.png`; }
     function getMetadataUrl(tokenId) { return `${METADATA_GATEWAY}/${METADATA_CID}/${tokenId}`; }
-    
+
     // ========== CONTRACT CONFIG ==========
     const CONTRACT_ADDRESS = "0xd45298BA97F15e191BfA5cb2f39fAE6e80C60736";
-    const ERC721_ABI = [
+    const ABI = [
       "function totalSupply() view returns (uint256)",
       "function balanceOf(address owner) view returns (uint256)",
       "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)"
     ];
-    
-    let provider = null;
-    let signer = null;
-    let userAddress = null;
-    let nftContract = null;
-    let currentTotalSupply = 520; // Default 520
-    
-    // Gallery state
-    let isLoadingGallery = false;
-    
-    // Rotator
-    let rotationInterval = null;
-    let currentRotateIdx = 1;
-    
-    // DOM elements
-    const rotatingContainer = document.getElementById('rotatingContainer');
-    const nftIdLabel = document.getElementById('nftIdLabel');
-    const nftNameLabel = document.getElementById('nftNameLabel');
-    const mintProgressFill = document.getElementById('mintProgressFill');
-    const mintedCountSpan = document.getElementById('mintedCount');
-    const mintStatusSpan = document.getElementById('mintStatus');
-    const galleryGrid = document.getElementById('galleryGrid500');
-    const myPunksContainer = document.getElementById('myPunksContainer');
-    const myPunksGrid = document.getElementById('myPunksGrid');
-    
-    // ========== REAL MINT DATA FROM CONTRACT ==========
-    async function fetchTotalSupply() {
-      if(!nftContract && window.ethereum) {
-        try {
-          provider = new ethers.BrowserProvider(window.ethereum);
-          nftContract = new ethers.Contract(CONTRACT_ADDRESS, ERC721_ABI, provider);
-        } catch(e) { console.log("Provider not ready"); }
-      }
-      
-      if(!nftContract) {
-        // Keep showing 520 if contract not ready
-        mintedCountSpan.innerText = currentTotalSupply;
-        const percent = (currentTotalSupply / 10000) * 100;
-        mintProgressFill.style.width = `${percent}%`;
-        mintStatusSpan.innerHTML = `🟡 Connecting to contract... (${currentTotalSupply}/10000 shown)`;
-        return currentTotalSupply;
-      }
-      
-      try {
-        const supply = await nftContract.totalSupply();
-        currentTotalSupply = Number(supply);
-        const percent = (currentTotalSupply / 10000) * 100;
-        mintProgressFill.style.width = `${percent}%`;
-        mintedCountSpan.innerText = currentTotalSupply;
-        mintStatusSpan.innerHTML = `🟢 LIVE • ${currentTotalSupply} / 10,000 minted`;
-        return currentTotalSupply;
-      } catch(e) {
-        console.log("Error fetching supply:", e);
-        mintStatusSpan.innerHTML = `🟡 Contract fetch pending... (${currentTotalSupply}/10000 shown)`;
-        return currentTotalSupply;
-      }
-    }
-    
-    // Auto refresh mint data every 10 seconds
-    function startMintDataRefresh() {
-      fetchTotalSupply();
-      setInterval(async () => {
-        await fetchTotalSupply();
-      }, 10000);
-    }
-    
-    // ========== NFT METADATA FETCHER ==========
-    const metadataCache = new Map();
-    
+
+    let provider = null, signer = null, userAddress = null, nftContract = null;
+    let currentTotalSupply = 528;
+    let rotationInterval = null, currentRotateIdx = 1;
+    let metaCache = new Map();
+
+    function $(id) { return document.getElementById(id); }
+    function txLog(msg) { if($('txStatusLog')) $('txStatusLog').textContent = `// SYSTEM: ${msg}`; }
+
+    // ========== METADATA FETCH ==========
     async function fetchMetadata(tokenId) {
-      if(metadataCache.has(tokenId)) return metadataCache.get(tokenId);
+      if (metaCache.has(tokenId)) return metaCache.get(tokenId);
       try {
         const url = getMetadataUrl(tokenId);
         const response = await fetch(url);
-        if(!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const metadata = await response.json();
-        metadataCache.set(tokenId, metadata);
+        metaCache.set(tokenId, metadata);
         return metadata;
-      } catch(error) {
-        const fallback = { name: `404 Punks #${tokenId}`, description: "404 signal detected", attributes: [] };
-        metadataCache.set(tokenId, fallback);
+      } catch (error) {
+        const fallback = { name: `404 Punks #${tokenId}`, description: "404 signal detected from the void", attributes: [] };
+        metaCache.set(tokenId, fallback);
         return fallback;
       }
     }
-    
-    // ========== ROTATOR ==========
-    async function updateRotatingNft(tokenId) {
-      rotatingContainer.innerHTML = '<div class="loading-spinner"></div>';
+
+    // ========== TOTAL SUPPLY FROM CONTRACT ==========
+    async function fetchTotalSupply() {
+      if (!nftContract && window.ethereum) {
+        try {
+          const prov = new ethers.BrowserProvider(window.ethereum);
+          nftContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, prov);
+        } catch(e) { txLog("provider pending"); }
+      }
+      if (!nftContract) {
+        $('mintedCount').innerText = currentTotalSupply;
+        $('mintProgressFill').style.width = (currentTotalSupply/10000*100)+'%';
+        return currentTotalSupply;
+      }
       try {
-        const img = document.createElement('img');
-        img.className = 'w-64 h-64 object-cover';
-        img.style.imageRendering = 'crisp-edges';
-        img.src = getImageUrl(tokenId);
-        img.onerror = () => { rotatingContainer.innerHTML = `<div class="w-64 h-64 flex items-center justify-center bg-[#1a1a2e] text-[#0f0] text-center">404<br>#${tokenId}</div>`; };
-        img.onload = () => { rotatingContainer.innerHTML = ''; rotatingContainer.appendChild(img); };
-        
-        const metadata = await fetchMetadata(tokenId);
-        nftNameLabel.innerText = metadata.name || `404 Punks #${tokenId}`;
+        const supply = Number(await nftContract.totalSupply());
+        currentTotalSupply = supply;
+        $('mintedCount').innerText = supply;
+        $('mintProgressFill').style.width = (supply/10000*100)+'%';
+        $('mintStatus').innerHTML = `🟢 LIVE • ${supply} / 10,000 minted`;
+        return supply;
       } catch(e) {
-        nftNameLabel.innerText = '404 Punks';
+        txLog(`contract query pending: ${e.message?.slice(0,50)}`);
+        return currentTotalSupply;
       }
     }
-    
+
+    function startMintRefresh() {
+      fetchTotalSupply();
+      setInterval(fetchTotalSupply, 10000);
+    }
+
+    // ========== ROTATOR ==========
+    async function updateRotatingNft(tokenId) {
+      const container = $('rotatingContainer');
+      container.innerHTML = '<div class="loading-spinner"></div>';
+      const img = new Image();
+      img.className = 'w-64 h-64 object-cover';
+      img.style.imageRendering = 'crisp-edges';
+      img.src = getImageUrl(tokenId);
+      img.onerror = () => { container.innerHTML = `<div class="w-64 h-64 flex items-center justify-center bg-[#1a1a2e] text-[#0f0] text-center">404<br>#${tokenId}</div>`; };
+      img.onload = () => { container.innerHTML = ''; container.appendChild(img); };
+      const meta = await fetchMetadata(tokenId);
+      $('nftNameLabel').innerText = meta.name || `404 Punks #${tokenId}`;
+    }
+
     function startNftRotator() {
-      if(rotationInterval) clearInterval(rotationInterval);
+      if (rotationInterval) clearInterval(rotationInterval);
       rotationInterval = setInterval(() => {
         currentRotateIdx = (currentRotateIdx % 10000) + 1;
         updateRotatingNft(currentRotateIdx);
-        nftIdLabel.innerText = `#${String(currentRotateIdx).padStart(4, '0')}`;
+        $('nftIdLabel').innerText = `#${String(currentRotateIdx).padStart(4, '0')}`;
       }, 5000);
       updateRotatingNft(1);
-      nftIdLabel.innerText = "#0001";
+      $('nftIdLabel').innerText = "#0001";
     }
-    
+
     // ========== GALLERY - FIRST 500 NFTs ==========
     async function loadGalleryBatch(startId, count) {
       const fragment = document.createDocumentFragment();
       const endId = Math.min(startId + count - 1, 500);
-      
-      for(let i = startId; i <= endId; i++) {
-        const imgUrl = getImageUrl(i);
+      for (let i = startId; i <= endId; i++) {
         const card = document.createElement('div');
         card.className = 'gallery-card nft-card';
-        card.onclick = () => showMetadataForToken(i);
+        card.onclick = (function(id) { return function() { showMetadataForToken(id); }; })(i);
         card.innerHTML = `
-          <img src="${imgUrl}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%231a1a2e%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 fill=%27%2300ff00%27 font-size=%2712%27%3E#${i}%3C/text%3E%3C/svg%3E'">
+          <img src="${getImageUrl(i)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%231a1a2e%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27 fill=%27%2300ff00%27 font-size=%2712%27%3E#${i}%3C/text%3E%3C/svg%3E'">
           <p class="text-sm font-bold mt-1">#${i}</p>
         `;
         fragment.appendChild(card);
       }
-      galleryGrid.appendChild(fragment);
+      $('galleryGrid500').appendChild(fragment);
     }
-    
-    async function loadFirst500NFTs() {
-      galleryGrid.innerHTML = '<div class="col-span-full text-center p-4"><div class="loading-spinner"></div><p>Loading first 500 punks from IPFS...</p></div>';
-      
-      // Load in batches for better performance
-      for(let batch = 1; batch <= 500; batch += 50) {
-        await loadGalleryBatch(batch, Math.min(50, 500 - batch + 1));
-        await new Promise(resolve => setTimeout(resolve, 50));
+
+    async function loadFirst500() {
+      $('galleryGrid500').innerHTML = '<div class="col-span-full text-center p-4"><div class="loading-spinner"></div><p>Loading 500 identities from IPFS...</p></div>';
+      for (let batch = 1; batch <= 500; batch += 50) {
+        await loadGalleryBatch(batch, 50);
+        await new Promise(r => setTimeout(r, 40));
       }
     }
-    
-    // ========== WALLET ==========
-    async function initContractOnly() {
-      if(!window.ethereum) return;
-      try {
-        provider = new ethers.BrowserProvider(window.ethereum);
-        nftContract = new ethers.Contract(CONTRACT_ADDRESS, ERC721_ABI, provider);
-        await fetchTotalSupply();
-      } catch(e) { console.log(e); }
-    }
-    
-    document.getElementById('connectWalletBtn')?.addEventListener('click', async () => {
-      if(!window.ethereum) return alert("Install MetaMask");
+
+    // ========== WALLET CONNECT - REAL ==========
+    $('connectWalletBtn').addEventListener('click', async () => {
+      if (!window.ethereum) {
+        alert("⚠️ MetaMask not detected! Please install MetaMask extension.");
+        return;
+      }
+      txLog("requesting wallet connection...");
       try {
         provider = new ethers.BrowserProvider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         signer = await provider.getSigner();
         userAddress = await signer.getAddress();
-        document.getElementById('walletStatus').innerHTML = `✅ ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-        document.getElementById('connectWalletBtn').disabled = true;
-        document.getElementById('myPunksBtn').disabled = false;
-        
-        nftContract = new ethers.Contract(CONTRACT_ADDRESS, ERC721_ABI, provider);
-        
+
+        $('walletStatus').innerHTML = `✅ ${userAddress.slice(0,6)}...${userAddress.slice(-4)} <span class="live-dot" style="margin-left:4px;"></span>`;
+        $('connectWalletBtn').disabled = true;
+        $('myPunksBtn').disabled = false;
+
+        nftContract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+        txLog(`wallet linked: ${userAddress.slice(0,10)}... — fetching holdings...`);
+        await fetchTotalSupply();
+        await loadOwnedPunks();
+
+      } catch (err) {
+        console.error(err);
+        txLog(`connection failed: ${err.message?.slice(0,80)}`);
+        alert("Connection failed: " + err.message);
+      }
+    });
+
+    // ========== MY PUNKS BTN ==========
+    $('myPunksBtn').addEventListener('click', () => {
+      if (!userAddress) { alert("Connect wallet first"); return; }
+      $('myPunksContainer').classList.toggle('show');
+    });
+
+    // ========== LOAD OWNED PUNKS ==========
+    async function loadOwnedPunks() {
+      if (!nftContract || !userAddress) return;
+      txLog(`querying contract for tokens owned by ${userAddress.slice(0,10)}...`);
+      $('myPunksContainer').classList.add('show');
+      $('myPunksGrid').innerHTML = '<div class="col-span-full text-center p-4"><div class="loading-spinner"></div><p>Resolving your bound identities...</p></div>';
+
+      try {
         const balance = await nftContract.balanceOf(userAddress);
-        let owned = [];
-        for(let i=0;i<balance;i++) owned.push(Number(await nftContract.tokenOfOwnerByIndex(userAddress, i)));
-        
-        if(owned.length > 0) {
-          let html = '';
-          for(let id of owned.slice(0, 50)) {
-            html += `<div class="gallery-card nft-card" onclick="showMetadataForToken(${id})">
-              <img src="${getImageUrl(id)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%231a1a2e%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 fill=%27%2300ff00%27%3E#${id}%3C/text%3E%3C/svg%3E'">
-              <p class="text-sm font-bold mt-1">#${id}</p>
-            </div>`;
-          }
-          myPunksGrid.innerHTML = html;
-          myPunksContainer.classList.add('show');
-        } else {
-          myPunksGrid.innerHTML = '<div class="col-span-full text-center p-4">No 404 Punks found in this wallet.</div>';
-          myPunksContainer.classList.add('show');
+        const count = Number(balance);
+        txLog(`found ${count} token(s) owned by address`);
+        $('myPunksMeta').textContent = `Wallet: ${userAddress}  |  Owned: ${count} NFT(s)`;
+
+        if (count === 0) {
+          $('myPunksGrid').innerHTML = '<div class="col-span-full text-center p-6 text-gray-600">No 404 Punks found in this wallet. Mint some!</div>';
+          return;
         }
-      } catch(err) { console.log(err); }
-    });
-    
-    // My Punks button toggle
-    document.getElementById('myPunksBtn')?.addEventListener('click', async () => {
-      if(!userAddress) { alert("Connect wallet first"); return; }
-      myPunksContainer.classList.toggle('show');
-    });
-    
+
+        const tokenIds = [];
+        for (let i = 0; i < count; i++) {
+          const tid = Number(await nftContract.tokenOfOwnerByIndex(userAddress, i));
+          tokenIds.push(tid);
+        }
+
+        $('myPunksGrid').innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        for (const id of tokenIds) {
+          const card = document.createElement('div');
+          card.className = 'gallery-card nft-card';
+          card.onclick = (function(tokenId) { return function() { showMetadataForToken(tokenId); }; })(id);
+          card.innerHTML = `
+            <img src="${getImageUrl(id)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%231a1a2e%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27 fill=%27%2300ff00%27 font-size=%2712%27%3E#${id}%3C/text%3E%3C/svg%3E'">
+            <p class="text-sm font-bold mt-1">#${id}</p>`;
+          fragment.appendChild(card);
+        }
+        $('myPunksGrid').appendChild(fragment);
+        txLog(`rendered ${tokenIds.length} owned identity shards`);
+
+      } catch (err) {
+        console.error(err);
+        txLog(`error fetching tokens: ${err.message?.slice(0,80)}`);
+        $('myPunksGrid').innerHTML = `<div class="col-span-full text-center p-4 text-red-700">Error loading NFTs: ${err.message?.slice(0,100)}</div>`;
+      }
+    }
+
+    // ========== SHOW METADATA MODAL ==========
     window.showMetadataForToken = async function(tokenId) {
-      const modal = document.getElementById('metadataModal');
-      const contentDiv = document.getElementById('metadataContent');
+      const modal = $('metadataModal');
+      const content = $('metadataContent');
       modal.style.display = 'flex';
-      contentDiv.innerHTML = `<div class="text-center"><div class="loading-spinner"></div><p class="mt-2">Loading details from IPFS...</p></div>`;
-      
+      content.innerHTML = '<div class="text-center"><div class="loading-spinner"></div><p class="mt-2">Decoding metadata from IPFS...</p></div>';
       const metadata = await fetchMetadata(tokenId);
       const imageUrl = getImageUrl(tokenId);
-      
       let attrsHtml = '';
-      if(metadata.attributes && metadata.attributes.length > 0) {
-        attrsHtml = `<div class="flex flex-wrap gap-2 mt-3">
-          ${metadata.attributes.map(attr => `<span class="attribute-tag">${attr.trait_type}: ${attr.value}</span>`).join('')}
-        </div>`;
+      if (metadata.attributes && metadata.attributes.length > 0) {
+        attrsHtml = `<div class="flex flex-wrap gap-2 mt-3">${metadata.attributes.map(attr => `<span class="attribute-tag">${attr.trait_type}: ${attr.value}</span>`).join('')}</div>`;
       }
-      
-      contentDiv.innerHTML = `
+      content.innerHTML = `
         <div class="win95-inset p-4">
-          <div class="flex justify-center mb-4"><img src="${imageUrl}" class="w-48 h-48 object-cover border-2 border-black"></div>
+          <div class="flex justify-center mb-4"><img src="${imageUrl}" class="w-48 h-48 object-cover border-2 border-black" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27200%27 height=%27200%27%3E%3Crect width=%27200%27 height=%27200%27 fill=%27%231a1a2e%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27 fill=%27%2300ff00%27 font-size=%2720%27%3E#${tokenId}%3C/text%3E%3C/svg%3E'"></div>
           <p class="text-xl font-bold text-center">${metadata.name || `404 Punks #${tokenId}`}</p>
           <p class="text-sm mt-2 text-center">${metadata.description || "404 signal detected. Identity from the digital void."}</p>
           ${attrsHtml}
-          <div class="mt-3 pt-2 border-t border-gray-400 text-center text-xs text-gray-700">Token ID: ${tokenId}</div>
-        </div>
-      `;
+          <div class="mt-3 pt-2 border-t border-gray-400 text-center text-xs text-gray-700">Token ID: ${tokenId} | Contract: ${CONTRACT_ADDRESS.slice(0,12)}...</div>
+        </div>`;
     };
-    
-    window.closeMetadataModal = () => document.getElementById('metadataModal').style.display = 'none';
-    
+
+    window.closeMetadataModal = () => $('metadataModal').style.display = 'none';
+
+    // ========== CLOCK ==========
     function updateClock() {
-      const clockSpan = document.getElementById('clockDisplay');
-      if(clockSpan) clockSpan.innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const c = $('clockDisplay');
+      if (c) c.innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
     }
     setInterval(updateClock, 1000);
-    
-    // Loading screen
+    updateClock();
+
+    // ========== LOADING SEQUENCE ==========
     function startLoading() {
       let progress = 0;
+      const steps = [
+        [15, "Initializing IPFS gateway...", "Connecting to distributed storage node"],
+        [30, "Loading metadata registry...", "Fetching CID shard mappings"],
+        [50, "Calibrating NFT rotator...", "Setting entropy stream handlers"],
+        [70, "Rendering identity gallery...", "Preparing first 500 shards"],
+        [85, "Finalizing contract interface...", "Establishing on-chain link"],
+        [100, "Portal active!", "All subsystems nominal — ready"]
+      ];
+      let stepIdx = 0;
       const interval = setInterval(() => {
-        progress = Math.min(progress + Math.random() * 9 + 3, 100);
-        document.getElementById('loading-bar').style.width = progress + '%';
-        if(progress >= 100) {
+        if (stepIdx >= steps.length) {
+          clearInterval(interval);
+          return;
+        }
+        const [pct, text, detail] = steps[stepIdx];
+        progress = pct;
+        $('loading-bar').style.width = progress + '%';
+        $('loading-text').textContent = text;
+        $('loading-detail').textContent = detail;
+        stepIdx++;
+        if (progress >= 100) {
           clearInterval(interval);
           setTimeout(async () => {
-            await initContractOnly();
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('main-portal').classList.remove('hidden');
+            $('loading-screen').classList.add('hidden');
+            $('main-portal').classList.remove('hidden');
             startNftRotator();
-            startMintDataRefresh();
-            await loadFirst500NFTs();
+            startMintRefresh();
+            await loadFirst500();
           }, 400);
         }
-      }, 200);
+      }, 260);
     }
-    
+
     document.addEventListener('DOMContentLoaded', startLoading);
   </script>
 </body>
